@@ -76,7 +76,7 @@ public class HomeMainMenu extends Table {
 			@Override
 			public void clicked (InputEvent event, float x, float y) {
 				game.setScreen(game.gameScreen);
-				game.gameScreen.newGame(false);
+				game.gameScreen.newGame(4,0);
 			}
 		});
 
@@ -85,7 +85,7 @@ public class HomeMainMenu extends Table {
 			@Override
 			public void clicked (InputEvent event, float x, float y) {
 				game.setScreen(game.gameScreen);
-				game.gameScreen.newGame(true);
+				game.gameScreen.newGame(1,1);
 			}
 		});
 
