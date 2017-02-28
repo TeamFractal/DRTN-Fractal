@@ -23,6 +23,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import io.github.teamfractal.RoboticonQuest;
+import io.github.teamfractal.screens.PlayerSelectScreen;
 
 
 public class HomeMainMenu extends Table {
@@ -75,8 +76,8 @@ public class HomeMainMenu extends Table {
 		btnNewGame.addListener(new ClickListener() {
 			@Override
 			public void clicked (InputEvent event, float x, float y) {
-				game.setScreen(game.gameScreen);
-				game.gameScreen.newGame(4,0);
+				game.setScreen(new PlayerSelectScreen(game));
+				//game.gameScreen.newGame(4,0);
 			}
 		});
 

@@ -73,6 +73,7 @@ public class RoboticonQuest extends Game {
 
 	private PlotEffectSource plotEffectSource;
 	private PlayerEffectSource playerEffectSource;
+	public Skin skin2;
 
 	public RoboticonQuest() {
 		_instance = this;
@@ -149,6 +150,12 @@ public class RoboticonQuest extends Game {
 		skin.add("default", smallFontLight.font());
 		skin.addRegions(new TextureAtlas(Gdx.files.internal("skin/skin.atlas")));
 		skin.load(Gdx.files.internal("skin/skin.json"));
+		
+		skin2 = new Skin();
+		skin2.add("default", headerFontLight.font());
+		skin2.addRegions(new TextureAtlas(Gdx.files.internal("skin/skin.atlas")));
+		skin2.load(Gdx.files.internal("skin/skin2.json"));
+		
 	}
 
 	/**
