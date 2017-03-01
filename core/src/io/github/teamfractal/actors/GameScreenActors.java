@@ -15,6 +15,8 @@ package io.github.teamfractal.actors;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.NinePatch;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
@@ -23,6 +25,8 @@ import com.badlogic.gdx.scenes.scene2d.ui.SelectBox;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
+import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
+import com.badlogic.gdx.scenes.scene2d.utils.NinePatchDrawable;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.Array;
 import io.github.teamfractal.RoboticonQuest;
@@ -34,6 +38,12 @@ import io.github.teamfractal.screens.AbstractAnimationScreen;
 import io.github.teamfractal.screens.GameScreen;
 
 public class GameScreenActors {
+	private static NinePatchDrawable tableBackground;
+	static {
+		NinePatch patch = new NinePatch(new Texture(Gdx.files.internal("image/table9Patch-5.png")), 5, 5, 5, 5);
+		tableBackground = new NinePatchDrawable(patch);
+	}
+
 	private final Stage stage;
 	private RoboticonQuest game;
 	private GameScreen screen;
@@ -118,20 +128,23 @@ public class GameScreenActors {
 		phaseInfo.add(phaseDescriptionLabel).width(300);
 
 		// Create plot stats table
-		plotStatsTable = new Table();
+		plotStatsTable = new Table(game.skin);
+		plotStatsTable.setBackground(GameScreenActors.tableBackground);
 		plotStatsTable.align(Align.left);
 		plotStatsTable.setVisible(false);
 		plotOreLabel = new Label("0", new Label.LabelStyle(game.smallFontLight.font(), Color.WHITE));
 		plotFoodLabel = new Label("0", new Label.LabelStyle(game.smallFontLight.font(), Color.WHITE));
 		plotEnergyLabel = new Label("0", new Label.LabelStyle(game.smallFontLight.font(), Color.WHITE));
 		plotStatsTable.add(new Label("Ore", new Label.LabelStyle(game.smallFontRegular.font(), Color.WHITE))).width(70);
-		plotStatsTable.add(plotOreLabel).width(50);
+		plotStatsTable.add(plotOreLabel).width(20);
 		plotStatsTable.row();
 		plotStatsTable.add(new Label("Food", new Label.LabelStyle(game.smallFontRegular.font(), Color.WHITE))).width(70);
-		plotStatsTable.add(plotFoodLabel).width(50);
+		plotStatsTable.add(plotFoodLabel).width(20);
 		plotStatsTable.row();
 		plotStatsTable.add(new Label("Energy", new Label.LabelStyle(game.smallFontRegular.font(), Color.WHITE))).width(70);
-		plotStatsTable.add(plotEnergyLabel).width(50);
+		plotStatsTable.add(plotEnergyLabel).width(20);
+		plotStatsTable.setWidth(90);
+		plotStatsTable.setHeight(plotEnergyLabel.getPrefHeight() * 3);
 
 		// Adjust properties.
 		listUpdated = false;
@@ -243,7 +256,7 @@ public class GameScreenActors {
 				} else {
 					buyLandPlotBtn.setDisabled(true);
 				}
-				showPlotStats(plot, x + 10, y - 35);
+				showPlotStats(plot, x + 10, y - 65);
 
 				buyLandPlotBtn.setVisible(true);
 				break;
