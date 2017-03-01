@@ -37,6 +37,7 @@ import java.util.Random;
  * It will set up all the necessary classes.
  */
 public class RoboticonQuest extends Game {
+	private static Random rnd = new Random();
     private static RoboticonQuest _instance;
 	public Skin skin;
     public PlotManager plotManager;
@@ -308,15 +309,9 @@ public class RoboticonQuest extends Game {
 
 			// End phase - CLean up and move to next player.
 			case 6:
-                phase = 1;
-
-                if (checkGameEnded()) {
-                    setScreen(new EndGameScreen(this));
-                    break;
+                if (!captureChancellor()) {
+                	cleanUpForNextTurn();
                 }
-
-                this.turnNumber += 1;
-                this.nextPlayer();
 
 				// No "break;" here!
 				// Let the game to do phase 1 preparation.
@@ -363,6 +358,29 @@ public class RoboticonQuest extends Game {
 		if (gameScreen != null)
 			gameScreen.getActors().textUpdate();
 	}
+
+	private void cleanUpForNextTurn() {
+		phase = 1;
+
+		if (checkGameEnded()) {
+			setScreen(new EndGameScreen(this));
+			return ;
+		}
+
+		this.turnNumber += 1;
+		this.nextPlayer();
+	}
+
+	private boolean captureChancellor() {
+    	boolean b = rnd.nextBoolean();
+
+    	if (b) {
+
+	    }
+
+		return b;
+	}
+
 	/**
 	 * Advances the current phase
 	 */
