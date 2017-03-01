@@ -80,6 +80,8 @@ public class ResourceMarketScreen extends Overlay {
         return actors;
     }
 
+    static Random rnd = new Random();
+
     /**
      * Attempts to process a gamble using the amount of money entered into the market's interface by the current player
      * Will only gamble non-empty, valid amounts of money that the current player can actually afford to lose
@@ -88,21 +90,25 @@ public class ResourceMarketScreen extends Overlay {
         int playerRoll;
         int AIRoll;
 
+        int gambleAmount;
+        try {
+            gambleAmount = Integer.parseInt(actors.gambleFieldValue());
+        } catch (NumberFormatException ex) {
+            gambleAmount = 0;
+        }
+
         if (actors.gambleFieldValue().isEmpty()) {
             actors.setGambleStatusLabel("NO VALUE\nGIVEN", Color.RED);
             //Check to see if the player has actually provided an amount of money to gamble
-        } else if (Integer.parseInt(actors.gambleFieldValue()) < 1) {
+        } else if (gambleAmount < 1) {
             actors.setGambleStatusLabel("INVALID VALUE\nGIVEN", Color.RED);
             //Check to see if the player has tried to gamble with no money at all
-        } else if (Integer.parseInt(actors.gambleFieldValue()) > game.getPlayer().getMoney()) {
+        } else if (gambleAmount > game.getPlayer().getMoney()) {
             actors.setGambleStatusLabel("CANNOT AFFORD\nGAMBLE", Color.RED);
             //Check to see if the player can afford to make their specified gamble
         } else {
-            Random RNGesus = new Random();
-            Random RNGudas = new Random();
-
-            playerRoll = RNGesus.nextInt(6) + 1;
-            AIRoll = RNGudas.nextInt(6) + 1;
+            playerRoll = rnd.nextInt(6) + 1;
+            AIRoll = rnd.nextInt(6) + 1;
             //Roll two die
 
             if (playerRoll == AIRoll) {
@@ -110,15 +116,15 @@ public class ResourceMarketScreen extends Overlay {
                 //Do nothing if both dice produce equal values
             } else if (playerRoll > AIRoll) {
                 actors.setGambleStatusLabel("YOU\nWON", Color.GREEN);
-                game.getPlayer().setMoney(game.getPlayer().getMoney() + Integer.parseInt(actors.gambleFieldValue()));
-                gambleMoneyWonCounter += Integer.parseInt(actors.gambleFieldValue());
+                game.getPlayer().setMoney(game.getPlayer().getMoney() + gambleAmount);
+                gambleMoneyWonCounter += gambleAmount;
                 gambleWinLossCounter += 1;
                 //If the player's dice produces a higher value, add the amount of money that they gambled on to their
                 //current stack of funds
             } else {
                 actors.setGambleStatusLabel("YOU\nLOST", Color.RED);
-                game.getPlayer().setMoney(game.getPlayer().getMoney() - Integer.parseInt(actors.gambleFieldValue()));
-                gambleMoneyLostCounter += Integer.parseInt(actors.gambleFieldValue());
+                game.getPlayer().setMoney(game.getPlayer().getMoney() - gambleAmount);
+                gambleMoneyLostCounter += gambleAmount;
                 gambleWinLossCounter -= 1;
                 //If the AI's dice produces a higher value, subtract the amount of money that they gambled from their
                 //current stack of funds

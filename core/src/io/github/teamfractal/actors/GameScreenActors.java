@@ -129,7 +129,7 @@ public class GameScreenActors {
 
 		// Create plot stats table
 		plotStatsTable = new Table(game.skin);
-		plotStatsTable.setBackground(GameScreenActors.tableBackground);
+		plotStatsTable.setBackground(tableBackground);
 		plotStatsTable.align(Align.left);
 		plotStatsTable.setVisible(false);
 		plotOreLabel = new Label("0", new Label.LabelStyle(game.smallFontLight.font(), Color.WHITE));
@@ -143,8 +143,8 @@ public class GameScreenActors {
 		plotStatsTable.row();
 		plotStatsTable.add(new Label("Energy", new Label.LabelStyle(game.smallFontRegular.font(), Color.WHITE))).width(70);
 		plotStatsTable.add(plotEnergyLabel).width(20);
-		plotStatsTable.setWidth(90);
-		plotStatsTable.setHeight(plotEnergyLabel.getPrefHeight() * 3);
+		plotStatsTable.setWidth(plotStatsTable.getPrefWidth());
+		plotStatsTable.setHeight(plotStatsTable.getPrefHeight());
 
 		// Adjust properties.
 		listUpdated = false;
@@ -179,6 +179,7 @@ public class GameScreenActors {
 	private void createRoboticonInstallMenu() {
 		installRoboticonTable = new Table();
 		Table t = installRoboticonTable;
+		t.setBackground(tableBackground);
 
 		installRoboticonSelect = new SelectBox<String>(game.skin);
 		installRoboticonSelect.setItems(game.getPlayer().getRoboticonAmountList());
@@ -194,6 +195,9 @@ public class GameScreenActors {
 		t.add(installRoboticonBtn);
 		t.add(installRoboticonBtnCancel);
 		t.row();
+
+		t.setWidth(t.getPrefWidth());
+		t.setHeight(t.getPrefHeight());
 	}
 
 
