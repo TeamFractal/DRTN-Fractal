@@ -30,7 +30,6 @@ public class HomeMainMenu extends Table {
     private static Texture titleTexture = new Texture(Gdx.files.internal("roboticon_images/Duck-Related Roboticon Quest (Small).png"));
     private RoboticonQuest game;
 	private TextButton btnNewGame;
-	private TextButton btnNewAIGame;
 	private TextButton btnExit;
 
 	/**
@@ -45,15 +44,13 @@ public class HomeMainMenu extends Table {
 		imgTitle.setDrawable(new TextureRegionDrawable(new TextureRegion(titleTexture)));
 		
 
-		btnNewGame = new TextButton("Begin Two-Player Game", game.skin);
-		btnNewAIGame = new TextButton("Begin Game Against AI", game.skin);
+		btnNewGame = new TextButton("Begin New Game", game.skin);
+
 
 		btnExit = new TextButton("Exit", game.skin);
 
 		// Adjust properties.
 		btnNewGame.pad(10);
-
-		btnNewAIGame.pad(10);
 		btnExit.pad(10);
 
 		// Bind events.
@@ -64,7 +61,6 @@ public class HomeMainMenu extends Table {
 		row();
 
 		add(btnNewGame);
-		add(btnNewAIGame);
 		add(btnExit);
 
 	}
@@ -77,18 +73,11 @@ public class HomeMainMenu extends Table {
 			@Override
 			public void clicked (InputEvent event, float x, float y) {
 				game.setScreen(new PlayerSelectScreen(game));
-				//game.gameScreen.newGame(4,0);
 			}
 		});
 
 
-		btnNewAIGame.addListener(new ClickListener() {
-			@Override
-			public void clicked (InputEvent event, float x, float y) {
-				game.setScreen(game.gameScreen);
-				game.gameScreen.newGame(1,1);
-			}
-		});
+		
 
 		btnExit.addListener(new ClickListener() {
 			@Override

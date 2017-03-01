@@ -6,6 +6,7 @@ import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
+import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
@@ -31,6 +32,8 @@ public class PlayerSelectScreen implements Screen {
 		table.setFillParent(true);
 		
 		actors = new PlayerSelectActors(game);
+		table.add(new Label("Select Number of Players", game.skin3)).center().height(70);
+		table.row();
 		table.center().add(actors);
 		
 		stage.addActor(table);

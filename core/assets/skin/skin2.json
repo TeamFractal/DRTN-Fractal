@@ -19,16 +19,16 @@
     
     font: black
     fontOver: black
-    fontDown: white
-    fontChecked: white
+    fontDown: gray
+    fontChecked: gray
     fontCheckedOver: white
     fontDisabled: gray
   },
   com.badlogic.gdx.scenes.scene2d.ui.Skin$TintedDrawable: {
     buttonUp: { name: rect, color: white },
     buttonOver: { name: rect, color: white },
-    buttonDown: { name: rect, color: gray },
-    buttonDisabled: { name: rect, color: disabled },
+    buttonDown: { name: rect, color: white },
+    buttonDisabled: { name: rect, color: white },
     buttonChecked: { name: rect, color: checked },
     buttonCheckedOver: { name: rect, color: checkedOver },
     checkBoxOn: { name: check-on, color: up },

@@ -74,6 +74,9 @@ public class RoboticonQuest extends Game {
 	private PlotEffectSource plotEffectSource;
 	private PlayerEffectSource playerEffectSource;
 	public Skin skin2;
+	public Skin skin3;
+	private TTFont titleFontRegular;
+	private TTFont titleFontLight;
 
 	public RoboticonQuest() {
 		_instance = this;
@@ -97,8 +100,14 @@ public class RoboticonQuest extends Game {
 	@Override
 	public void create () {
 		batch = new SpriteBatch();
+		
+		Fonts fonts = new Fonts();
+        fonts.montserratRegular.setSize(32);
+        fonts.montserratLight.setSize(32);
+        titleFontRegular = fonts.montserratRegular;
+        titleFontLight = fonts.montserratLight;
 
-        Fonts fonts = new Fonts();
+        fonts = new Fonts();
         fonts.montserratRegular.setSize(24);
         fonts.montserratLight.setSize(24);
         headerFontRegular = fonts.montserratRegular;
@@ -155,6 +164,11 @@ public class RoboticonQuest extends Game {
 		skin2.add("default", headerFontLight.font());
 		skin2.addRegions(new TextureAtlas(Gdx.files.internal("skin/skin.atlas")));
 		skin2.load(Gdx.files.internal("skin/skin2.json"));
+		
+		skin3 = new Skin();
+		skin3.add("default",titleFontRegular.font());
+		skin3.addRegions(new TextureAtlas(Gdx.files.internal("skin/skin.atlas")));
+		skin3.load(Gdx.files.internal("skin/skin2.json"));
 		
 	}
 

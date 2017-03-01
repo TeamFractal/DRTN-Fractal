@@ -20,6 +20,7 @@ public class PlayerSelectActors extends Table {
 	private TextButton lessPlayers;
 	private TextButton moreAIPlayers;
 	private TextButton lessAIPlayers;
+	private TextButton confirm;
 	private RoboticonQuest game;
 	
 	public PlayerSelectActors(RoboticonQuest game){
@@ -34,6 +35,8 @@ public class PlayerSelectActors extends Table {
 		lessPlayers = new TextButton("-", game.skin2);
 		moreAIPlayers = new TextButton("+", game.skin2);
 		lessAIPlayers = new TextButton("-", game.skin2);
+		confirm = new TextButton("Confirm", game.skin2);
+		row();
 		add(playerLabel).height(40).left();
 		row();
 		add(lessPlayers);
@@ -46,7 +49,12 @@ public class PlayerSelectActors extends Table {
 		add(AIAmountLabel).width(30);
 		add(moreAIPlayers);
 		row();
+		add();
+		add();
+		add();
+		add(confirm);
 		bindEvents();
+		updateWidgets();
 		
 	}
 	
@@ -54,39 +62,77 @@ public class PlayerSelectActors extends Table {
 		morePlayers.addListener(new ClickListener() {
 			@Override
 			public void clicked (InputEvent event, float x, float y) {
-				playerAmount += 1;
-				updateLabels();
+				if(!morePlayers.isDisabled()){
+					playerAmount += 1;
+					updateWidgets();
+				}
 			}
 		});
 		
 		moreAIPlayers.addListener(new ClickListener() {
 			@Override
 			public void clicked (InputEvent event, float x, float y) {
-				AIPlayerAmount += 1;
-				updateLabels();
+				if(!moreAIPlayers.isDisabled()){
+					AIPlayerAmount += 1;
+					updateWidgets();
+				}
 			}
 		});
 		
 		lessPlayers.addListener(new ClickListener() {
 			@Override
 			public void clicked (InputEvent event, float x, float y) {
-				playerAmount -= 1;
-				updateLabels();
+				if(!lessPlayers.isDisabled()){
+					playerAmount -= 1;
+					updateWidgets();
+				}
 			}
 		});
 		
 		lessAIPlayers.addListener(new ClickListener() {
 			@Override
 			public void clicked (InputEvent event, float x, float y) {
-				AIPlayerAmount -= 1;
-				updateLabels();
+				if(!lessAIPlayers.isDisabled()){
+					AIPlayerAmount -= 1;
+					updateWidgets();
+				}
+			}
+		});
+		
+		confirm.addListener(new ClickListener() {
+			@Override
+			public void clicked (InputEvent event, float x, float y) {
+				if(!confirm.isDisabled()){
+					game.setScreen(game.gameScreen);
+					game.gameScreen.newGame(playerAmount,AIPlayerAmount);
+				}
 			}
 		});
 	}
 	
-	private void updateLabels(){
+	private void updateWidgets(){
 		playerAmountLabel.setText("" + playerAmount);
 		AIAmountLabel.setText("" + AIPlayerAmount);
+		morePlayers.setDisabled(true);
+		moreAIPlayers.setDisabled(true);
+		lessPlayers.setDisabled(true);
+		lessAIPlayers.setDisabled(true);
+		confirm.setDisabled(true);
+		if(AIPlayerAmount > 0 ){
+			lessAIPlayers.setDisabled(false);
+		}
+		if(playerAmount > 0){
+			lessPlayers.setDisabled(false);
+		}
+		if(AIPlayerAmount + playerAmount < 4){
+			morePlayers.setDisabled(false);
+			moreAIPlayers.setDisabled(false);
+		}
+		
+		if(AIPlayerAmount + playerAmount > 1 && playerAmount >= 1){
+			confirm.setDisabled(false);
+		}
+		
 	}
 
 }
