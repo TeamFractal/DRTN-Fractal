@@ -40,7 +40,7 @@ import io.github.teamfractal.screens.GameScreen;
 public class GameScreenActors {
 	private static NinePatchDrawable tableBackground;
 	static {
-		NinePatch patch = new NinePatch(new Texture(Gdx.files.internal("image/table9Patch-5.png")), 5, 5, 5, 5);
+		NinePatch patch = new NinePatch(new Texture(Gdx.files.internal("image/table9Patch-5.png")), 7, 7, 7, 7);
 		tableBackground = new NinePatchDrawable(patch);
 	}
 
@@ -135,6 +135,7 @@ public class GameScreenActors {
 		plotOreLabel = new Label("0", new Label.LabelStyle(game.smallFontLight.font(), Color.WHITE));
 		plotFoodLabel = new Label("0", new Label.LabelStyle(game.smallFontLight.font(), Color.WHITE));
 		plotEnergyLabel = new Label("0", new Label.LabelStyle(game.smallFontLight.font(), Color.WHITE));
+		plotStatsTable.add(buyLandPlotBtn).colspan(2).row();
 		plotStatsTable.add(new Label("Ore", new Label.LabelStyle(game.smallFontRegular.font(), Color.WHITE))).width(70);
 		plotStatsTable.add(plotOreLabel).width(20);
 		plotStatsTable.row();
@@ -158,7 +159,7 @@ public class GameScreenActors {
 
 		// Add to the stage for rendering.
 		stage.addActor(nextButton);
-		stage.addActor(buyLandPlotBtn);
+		// stage.addActor(buyLandPlotBtn);
 		stage.addActor(installRoboticonTable);
 		stage.addActor(phaseInfo);
 		stage.addActor(plotStatsTable);
@@ -253,14 +254,14 @@ public class GameScreenActors {
 			// Phase 1:
 			// Purchase LandPlot.
 			case 1:
-				buyLandPlotBtn.setPosition(x + 10, y);
+				// buyLandPlotBtn.setPosition(x + 10, y);
 				if (game.canPurchaseLandThisTurn()
 						&& !plot.hasOwner()) {
 					buyLandPlotBtn.setDisabled(false);
 				} else {
 					buyLandPlotBtn.setDisabled(true);
 				}
-				showPlotStats(plot, x + 10, y - 65);
+				showPlotStats(plot, x + 10, y);
 
 				buyLandPlotBtn.setVisible(true);
 				break;
@@ -338,7 +339,7 @@ public class GameScreenActors {
 		plotEnergyLabel.setText(String.valueOf(plot.getResource(ResourceType.ENERGY)));
 		plotFoodLabel.setText(String.valueOf(plot.getResource(ResourceType.FOOD)));
 
-		plotStatsTable.setPosition(x, y);
+		plotStatsTable.setPosition(x, y - plotStatsTable.getPrefHeight());
 		plotStatsTable.setVisible(true);
 	}
 
