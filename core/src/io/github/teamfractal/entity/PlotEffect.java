@@ -23,7 +23,7 @@ import com.badlogic.gdx.utils.Array;
 import io.github.teamfractal.screens.GameScreen;
 import io.github.teamfractal.screens.Overlay;
 
-public class PlotEffect extends Array<Float[]> {
+public class PlotEffect extends Array<Float[]> implements Effect {
 
     /**
      * The name of the effect

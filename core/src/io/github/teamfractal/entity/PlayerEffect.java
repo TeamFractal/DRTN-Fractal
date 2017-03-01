@@ -24,7 +24,7 @@ import io.github.teamfractal.screens.GameScreen;
 import io.github.teamfractal.screens.Overlay;
 
 
-public class PlayerEffect {
+public class PlayerEffect implements Effect {
 
     /**
      * The name of the effect
