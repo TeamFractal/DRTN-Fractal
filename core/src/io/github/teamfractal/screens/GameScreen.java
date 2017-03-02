@@ -283,8 +283,6 @@ public class GameScreen extends AbstractAnimationScreen implements Screen  {
 		stage.act(delta);
 		stage.draw();
 
-		renderAnimation(delta);
-
 		switch (game.getPhase()) {
 			case (1):
 				if (overlayStack.isEmpty() || overlayStack == null) {
@@ -308,6 +306,8 @@ public class GameScreen extends AbstractAnimationScreen implements Screen  {
 				game.resourceMarket.act(delta);
 				game.resourceMarket.draw();
 		}
+
+		renderAnimation(delta);
 	}
 
 	/**

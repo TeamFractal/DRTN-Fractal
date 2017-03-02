@@ -12,6 +12,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.utils.Timer;
 import io.github.teamfractal.animation.AnimationCustomHeader;
 import io.github.teamfractal.animation.AnimationPhaseTimeout;
+import io.github.teamfractal.animation.AnimationWildChancellorAppear;
 import io.github.teamfractal.animation.IAnimationFinish;
 import io.github.teamfractal.entity.*;
 import io.github.teamfractal.screens.*;
@@ -220,6 +221,7 @@ public class RoboticonQuest extends Game {
 	 * Implements the functionality of the current phase
 	 */
     private void implementPhase() {
+	    gameScreen.addAnimation(new AnimationWildChancellorAppear(skin));
         System.out.println("RoboticonQuest::nextPhase -> newPhaseState: " + phase);
 
 		switch (phase) {

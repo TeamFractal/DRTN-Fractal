@@ -21,21 +21,10 @@ import io.github.teamfractal.RoboticonQuest;
 import io.github.teamfractal.entity.Player;
 import io.github.teamfractal.screens.AbstractAnimationScreen;
 
-public class AnimationPhaseTimeout implements IAnimation {
+public class AnimationPhaseTimeout extends AnimationTimeout implements IAnimation {
 	private final Player player;
 	private final RoboticonQuest game;
 	private final int currentPhase;
-	private final float timeout;
-	private float time;
-	private IAnimationFinish callback;
-	private boolean callbackDone;
-	private static BitmapFont font = new BitmapFont();
-	private static ShapeRenderer rect = new ShapeRenderer();
-	private static GlyphLayout glyphLayout = new GlyphLayout();
-
-	static {
-		rect.setAutoShapeType(true);
-	}
 
 	/**
 	 * Initialise the animation.
@@ -45,88 +34,26 @@ public class AnimationPhaseTimeout implements IAnimation {
 	 * @param timeout        Timeout length, in seconds.
 	 */
 	public AnimationPhaseTimeout(Player player, RoboticonQuest game, int currentPhase, float timeout) {
+		super(timeout);
 		this.player = player;
 		this.game = game;
 		this.currentPhase = currentPhase;
-		this.timeout = timeout;
+
+		super.setAnimationFinish(new IAnimationFinish() {
+			@Override
+			public void OnAnimationFinish() {
+				AnimationPhaseTimeout.this.game.nextPhase();
+			}
+		});
 	}
 
 	/**
 	 * Check if the animation should continue or not.
 	 * @return  <code>true</code> if the animation should continue.
 	 */
-	private boolean continueAnimation() {
-		return !callbackDone
+	protected boolean continueAnimation() {
+		return super.continueAnimation()
 				&& game.getPhase() == currentPhase
 				&& game.getPlayer() == player;
-	}
-
-	/**
-	 * Count down bar colour changes from green to red overtime.
-	 */
-	private void barColour() {
-		float r = time / timeout;
-		rect.setColor(r, 1 - r, 0, 0.7f);
-	}
-
-
-	/**
-	 * Draw animation on screen.
-	 *
-	 * @param delta     Time change since last call.
-	 * @param screen    The screen to draw on.
-	 * @param batch     The Batch for drawing stuff.
-	 * @return          return <code>true</code> if the animation has completed.
-	 */
-	@Override
-	public boolean tick(float delta, AbstractAnimationScreen screen, Batch batch) {
-		if (!continueAnimation()) return true;
-
-		AbstractAnimationScreen.Size size = screen.getScreenSize();
-		time += delta;
-
-		if (time >= timeout) return true;
-
-		int timeLeft = (int)(timeout - time) + 1;
-		String countdown = String.valueOf(timeLeft);
-
-		synchronized (rect) {
-			rect.setProjectionMatrix(batch.getProjectionMatrix());
-			rect.begin(ShapeRenderer.ShapeType.Filled);
-			barColour();
-			rect.rect(0, 0, (1 - time / timeout) * size.Width, 3);
-			rect.end();
-		}
-
-		synchronized (game.smallFontLight.font()) {
-			batch.begin();
-			glyphLayout.setText(game.smallFontLight.font(), countdown);
-			game.smallFontLight.font().setColor(1, 1, 1, 1);
-			game.smallFontLight.font().draw(batch, glyphLayout, 10, 25);
-			batch.end();
-		}
-
-		return false;
-	}
-
-	@Override
-	public void setAnimationFinish(IAnimationFinish callback) {
-		this.callback = callback;
-	}
-
-	@Override
-	public void callAnimationFinish() {
-		if (continueAnimation()) {
-			callbackDone = true;
-			game.nextPhase();
-
-			if (callback != null)
-				callback.OnAnimationFinish();
-		}
-	}
-
-	@Override
-	public void cancelAnimation() {
-		callbackDone = true;
 	}
 }
