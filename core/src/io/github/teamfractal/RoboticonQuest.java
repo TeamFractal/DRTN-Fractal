@@ -221,7 +221,7 @@ public class RoboticonQuest extends Game {
 	 * Implements the functionality of the current phase
 	 */
     private void implementPhase() {
-	    gameScreen.addAnimation(new AnimationWildChancellorAppear(skin));
+	    gameScreen.addAnimation(new AnimationWildChancellorAppear(this, skin));
         System.out.println("RoboticonQuest::nextPhase -> newPhaseState: " + phase);
 
 		switch (phase) {
@@ -448,6 +448,10 @@ public class RoboticonQuest extends Game {
 	 */
     public int getPlayerInt() {
         return this.currentPlayerIndex;
+    }
+
+    public String getPlayerName() {
+	    return "PLAYER " + (currentPlayerIndex + 1);
     }
 
 	/**

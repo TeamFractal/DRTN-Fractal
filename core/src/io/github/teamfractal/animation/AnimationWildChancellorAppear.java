@@ -7,21 +7,17 @@ import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
-import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
-import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
-import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.Align;
 import io.github.teamfractal.RoboticonQuest;
 import io.github.teamfractal.entity.Player;
 import io.github.teamfractal.screens.AbstractAnimationScreen;
-import io.github.teamfractal.util.Fonts;
 import io.github.teamfractal.util.TTFont;
 
 import java.util.ArrayList;
@@ -34,9 +30,10 @@ public class AnimationWildChancellorAppear implements IAnimation {
     private final Stage stage;
     private final RoboticonQuest game;
     private boolean eventEnd = false;
-    private CaptureState state;
+    private CaptureState state = CaptureState.WaitInput;
+	private float time;
 
-    private static float nextFloat(float max) {
+	private static float nextFloat(float max) {
 		return rnd.nextFloat() * max;
 	}
 	private static final ShapeRenderer shape = new ShapeRenderer();
@@ -45,6 +42,12 @@ public class AnimationWildChancellorAppear implements IAnimation {
 	private static final Texture textureChancellor;
 	private static final BitmapFont fontTitle;
     private static final BitmapFont fontText;
+    private static final int handCount = 4;
+    private static final float handAnimationTime = 0.3f;
+	private static final float handAnimationTotalTime = handAnimationTime * (handCount - 0.5f);
+	private static final List<Texture> textureHands;
+	private static final Texture textureMasterBall;
+
     AnimationTimeout timeoutAnimation = new AnimationTimeout(15);
 
     static {
@@ -56,6 +59,11 @@ public class AnimationWildChancellorAppear implements IAnimation {
 
         f.setSize(14);
         fontText = f.font();
+
+	    textureHands = new ArrayList<Texture>(handCount);
+	    for(int i = 1; i <= handCount; i++)
+	    	textureHands.add(new Texture(Gdx.files.internal("capture/hand" + i + ".png")));
+	    textureMasterBall = new Texture(Gdx.files.internal("capture/master-ball.png"));
     }
 
 	private class Strip {
@@ -106,7 +114,7 @@ public class AnimationWildChancellorAppear implements IAnimation {
 	private final static int heightBound = 90;
 	private final List<Strip> strips;
     private final Table table = new Table();
-	public AnimationWildChancellorAppear(RoboticonQuest game, AbstractAnimationScreen screen, Skin skin) {
+	public AnimationWildChancellorAppear(RoboticonQuest game, Skin skin) {
 	    this.game = game;
 	    processor = Gdx.input.getInputProcessor();
 	    stage = new Stage();
@@ -134,10 +142,10 @@ public class AnimationWildChancellorAppear implements IAnimation {
         btnCapture.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
+	            timeoutAnimation.setAnimationFinish(null);
                 captureChancellor();
             }
         });
-
         btnLeave.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
@@ -151,10 +159,12 @@ public class AnimationWildChancellorAppear implements IAnimation {
                 cancelAnimation();
             }
         });
-        screen.addAnimation(timeoutAnimation);
 	}
 
+	float captureTime;
+
     private void captureChancellor() {
+	    captureTime = time;
         Player player = game.getPlayer();
         if (player.getMoney() >= 20) {
             player.setMoney(player.getMoney() - 20);
@@ -164,12 +174,13 @@ public class AnimationWildChancellorAppear implements IAnimation {
     }
 
     private void doCaptureAnimation() {
-        state = CaptureState.Capturing;
+        state = CaptureState.BeginCapture;
         // TODO: prepare capture text feedback
     }
 
     @Override
 	public boolean tick(float delta, AbstractAnimationScreen screen, Batch batch) {
+	    time += delta;
         Gdx.input.setInputProcessor(stage);
 
 		// Draw shadow and background
@@ -215,7 +226,54 @@ public class AnimationWildChancellorAppear implements IAnimation {
         stage.act(delta);
         stage.draw();
 
-		return eventEnd;
+        switch (state) {
+	        case WaitInput:
+		        break;
+
+	        case BeginCapture:
+	        	renderCaptureAnimation(batch);
+		        break;
+
+	        case MasterBallThrown:
+		        break;
+
+	        case CaptureInProgress:
+		        break;
+
+	        case CaptureFailed:
+		        break;
+
+	        case CaptureSuccess:
+		        break;
+        }
+
+	    timeoutAnimation.tick(delta, screen, batch);
+
+	    return eventEnd;
+	}
+
+	private void renderCaptureAnimation(Batch batch) {
+		float t = time - captureTime;
+
+		int handIndex = (int)Math.floor(t / handAnimationTime);
+		if (handIndex >= handCount)
+			handIndex = handCount - 1;
+
+		batch.begin();
+		batch.draw(textureHands.get(handIndex), -40 * Math.max(0, t - handAnimationTotalTime), 0);
+
+		// Ball move from (70, 185).
+		float x = t * 60f;
+		batch.draw(textureMasterBall, 70 + x, (float)Math.sqrt(x) * t + 185);
+
+		// fontText.draw(batch, "t: " + t, 20, 20);
+		fontText.draw(batch, game.getPlayerName() + " has thrown master ball!", 20, 20);
+
+		if (t > 6f) {
+			state = CaptureState.MasterBallThrown;
+		}
+
+		batch.end();
 	}
 
 	@Override
@@ -231,11 +289,15 @@ public class AnimationWildChancellorAppear implements IAnimation {
 	@Override
 	public void cancelAnimation() {
         eventEnd = true;
+		timeoutAnimation.cancelAnimation();
+		timeoutAnimation.setAnimationFinish(null);
 	}
 
 	enum CaptureState {
 	    WaitInput,
-	    Capturing,
+		BeginCapture,
+		MasterBallThrown,
+		CaptureInProgress,
         CaptureFailed,
         CaptureSuccess
     }
