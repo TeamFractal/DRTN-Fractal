@@ -144,6 +144,7 @@ public class AnimationWildChancellorAppear implements IAnimation {
             public void changed(ChangeEvent event, Actor actor) {
 	            timeoutAnimation.setAnimationFinish(null);
                 captureChancellor();
+	            timeoutAnimation.cancelAnimation();
             }
         });
         btnLeave.addListener(new ChangeListener() {
@@ -159,6 +160,8 @@ public class AnimationWildChancellorAppear implements IAnimation {
                 cancelAnimation();
             }
         });
+
+        game.gameScreen.addAnimation(timeoutAnimation);
 	}
 
 	float captureTime;
@@ -247,8 +250,6 @@ public class AnimationWildChancellorAppear implements IAnimation {
 		        break;
         }
 
-	    timeoutAnimation.tick(delta, screen, batch);
-
 	    return eventEnd;
 	}
 
@@ -269,7 +270,7 @@ public class AnimationWildChancellorAppear implements IAnimation {
 		// fontText.draw(batch, "t: " + t, 20, 20);
 		fontText.draw(batch, game.getPlayerName() + " has thrown master ball!", 20, 20);
 
-		if (t > 6f) {
+		if (t > 6.3f) {
 			state = CaptureState.MasterBallThrown;
 		}
 
