@@ -22,6 +22,7 @@ public abstract class AbstractAnimationScreen {
 		if (!animations.contains(animation) && !queueAnimations.contains(animation)) {
 			synchronized (queueAnimations) {
 				queueAnimations.add(animation);
+				animation.setupScreen(this);
 			}
 		}
 	}
@@ -43,7 +44,7 @@ public abstract class AbstractAnimationScreen {
 
 			while (iterator.hasNext()) {
 				IAnimation animation = iterator.next();
-				if (animation.tick(delta, this, batch)) {
+				if (animation.tick(delta, batch)) {
 					iterator.remove();
 					animation.callAnimationFinish();
 				}

@@ -54,6 +54,8 @@ project(":core") {
     sourceSets.test.java.srcDirs = ["/test"]
 
     dependencies {
+        compile 'org.antlr:ST4:4.0.8'
+        compile 'com.google.code.gson:gson:2.8.0'
         compile "com.badlogicgames.gdx:gdx:$gdxVersion"
         compile "com.badlogicgames.gdx:gdx-box2d:$gdxVersion"
         compile "com.badlogicgames.box2dlights:box2dlights:$box2DLightsVersion"

@@ -12,7 +12,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.utils.Timer;
 import io.github.teamfractal.animation.AnimationCustomHeader;
 import io.github.teamfractal.animation.AnimationPhaseTimeout;
-import io.github.teamfractal.animation.AnimationWildChancellorAppear;
+import io.github.teamfractal.animation.chancellor.WildChancellorAppear;
 import io.github.teamfractal.animation.IAnimationFinish;
 import io.github.teamfractal.entity.*;
 import io.github.teamfractal.screens.*;
@@ -221,18 +221,16 @@ public class RoboticonQuest extends Game {
 	 * Implements the functionality of the current phase
 	 */
     private void implementPhase() {
-	    gameScreen.addAnimation(new AnimationWildChancellorAppear(this, skin));
+	    gameScreen.addAnimation(new WildChancellorAppear(this, skin));
         System.out.println("RoboticonQuest::nextPhase -> newPhaseState: " + phase);
 
 		switch (phase) {
 			// Phase 2: Purchase Roboticon
 			case 2:
-                Gdx.input.setInputProcessor(roboticonMarket);
+				phase1description.cancelAnimation();
+				gameScreen.addAnimation(phase2description);
 
-				if (!(getPlayer() instanceof AIPlayer)) {
-					phase1description.stop();
-					phase2description.play();
-				}
+                Gdx.input.setInputProcessor(roboticonMarket);
 
                 AnimationPhaseTimeout timeoutAnimation = new AnimationPhaseTimeout(getPlayer(), this, phase, 30);
 				gameScreen.addAnimation(timeoutAnimation);
@@ -246,12 +244,9 @@ public class RoboticonQuest extends Game {
 
 			// Phase 3: Roboticon Customisation
 			case 3:
+				phase2description.cancelAnimation();
+				gameScreen.addAnimation(phase3description);
                 Gdx.input.setInputProcessor(gameScreen.getStage());
-
-				if (!(getPlayer() instanceof AIPlayer)) {
-					phase2description.stop();
-					phase3description.play();
-				}
 
 				timeoutAnimation = new AnimationPhaseTimeout(getPlayer(), this, phase, 30);
 				gameScreen.addAnimation(timeoutAnimation);
@@ -269,12 +264,9 @@ public class RoboticonQuest extends Game {
 
 			// Phase 4: Generate resources for player
 			case 4:
+				phase3description.cancelAnimation();
+				gameScreen.addAnimation(phase4description);
                 Gdx.input.setInputProcessor(genOverlay);
-
-				if (!(getPlayer() instanceof AIPlayer)) {
-					phase3description.stop();
-					phase4description.play();
-				}
 
                 this.getPlayer().generateResources();
 				this.market.generateRoboticon();
@@ -295,12 +287,9 @@ public class RoboticonQuest extends Game {
 			// Phase 5: Open the market
 
 			case 5:
+				phase4description.cancelAnimation();
+				gameScreen.addAnimation(phase5description);
 			    Gdx.input.setInputProcessor(resourceMarket);
-
-				if (!(getPlayer() instanceof AIPlayer)) {
-					phase4description.stop();
-					phase5description.play();
-				}
 
 			    resourceMarket.actors().widgetUpdate();
 			    resourceMarket.gambleStatisticsReset();
@@ -321,6 +310,8 @@ public class RoboticonQuest extends Game {
 			// Phase 1: Enable of purchase LandPlot
 			case 1:
                 Gdx.input.setInputProcessor(gameScreen.getStage());
+				phase5description.cancelAnimation();
+				gameScreen.addAnimation(phase1description);
 
 				setScreen(gameScreen);
 				landBoughtThisTurn = 0;
@@ -330,11 +321,6 @@ public class RoboticonQuest extends Game {
 					setEffects();
 				}
 				//Only consider imposing effects once each player has claimed at least 1 tile
-
-				phase5description.stop();
-				if (!(getPlayer() instanceof AIPlayer)) {
-					phase1description.play();
-				}
 
                 System.out.println("Player: " + this.currentPlayerIndex + " Turn: " + this.getTurnNumber());
 
@@ -347,18 +333,18 @@ public class RoboticonQuest extends Game {
 				break;
 		}
 
-		playerHeader.stop();
-		if (!(getPlayer() instanceof AIPlayer)) {
-			if (phase == 4) {
-				playerHeader.setLength(3);
-			} else {
-				playerHeader.setLength(5);
-			}
-			playerHeader.play();
-		}
+	    if (gameScreen != null) {
+		    if (!(getPlayer() instanceof AIPlayer)) {
+			    if (phase == 4) {
+				    playerHeader.setLength(3);
+			    } else {
+				    playerHeader.setLength(5);
+			    }
+			    gameScreen.addAnimation(playerHeader);
+		    }
 
-		if (gameScreen != null)
-			gameScreen.getActors().textUpdate();
+		    gameScreen.getActors().textUpdate();
+	    }
 	}
 
 	private void cleanUpForNextTurn() {
@@ -464,6 +450,7 @@ public class RoboticonQuest extends Game {
 		else this.currentPlayerIndex ++;
 
 		playerHeader.setText("PLAYER " + (currentPlayerIndex + 1));
+		gameScreen.addAnimation(playerHeader);
     }
 
 	/**
@@ -533,11 +520,6 @@ public class RoboticonQuest extends Game {
 		phase5description = new AnimationCustomHeader("\nPHASE 5: Buy and Sell Resources", headerFontLight.font(), 5);
 
 		gameScreen.addAnimation(playerHeader);
-		gameScreen.addAnimation(phase1description);
-		gameScreen.addAnimation(phase2description);
-		gameScreen.addAnimation(phase3description);
-		gameScreen.addAnimation(phase4description);
-		gameScreen.addAnimation(phase5description);
 	}
 
 	/**

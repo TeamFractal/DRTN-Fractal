@@ -46,14 +46,4 @@ public class AnimationPhaseTimeout extends AnimationTimeout implements IAnimatio
 			}
 		});
 	}
-
-	/**
-	 * Check if the animation should continue or not.
-	 * @return  <code>true</code> if the animation should continue.
-	 */
-	protected boolean continueAnimation() {
-		return super.continueAnimation()
-				&& game.getPhase() == currentPhase
-				&& game.getPlayer() == player;
-	}
 }

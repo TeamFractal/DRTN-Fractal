@@ -1,4 +1,4 @@
-package io.github.teamfractal.animation;
+package io.github.teamfractal.animation.chancellor;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputProcessor;
@@ -16,6 +16,11 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.utils.Align;
 import io.github.teamfractal.RoboticonQuest;
+import io.github.teamfractal.animation.AbstractAnimation;
+import io.github.teamfractal.animation.AnimationTimeout;
+import io.github.teamfractal.animation.IAnimation;
+import io.github.teamfractal.animation.IAnimationFinish;
+import io.github.teamfractal.entity.CaptureData;
 import io.github.teamfractal.entity.Player;
 import io.github.teamfractal.screens.AbstractAnimationScreen;
 import io.github.teamfractal.util.TTFont;
@@ -24,15 +29,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-public class AnimationWildChancellorAppear implements IAnimation {
+public class WildChancellorAppear extends AbstractAnimation implements IAnimation {
 	private static final Random rnd = new Random();
-    private final InputProcessor processor;
-    private final Stage stage;
-    private final RoboticonQuest game;
-    private boolean eventEnd = false;
-    private CaptureState state = CaptureState.WaitInput;
-	private float time;
-
+	private static final CaptureData captureData;
 	private static float nextFloat(float max) {
 		return rnd.nextFloat() * max;
 	}
@@ -48,9 +47,18 @@ public class AnimationWildChancellorAppear implements IAnimation {
 	private static final List<Texture> textureHands;
 	private static final Texture textureMasterBall;
 
+    private final InputProcessor processor;
+    private final Stage stage;
+    private final RoboticonQuest game;
+    private boolean eventEnd = false;
+    private CaptureState state = CaptureState.WaitInput;
+    private float shadowHeight;
+    private AbstractAnimationScreen.Size size;
+    private final CaptureData.AttributeType chancellType;
+
     AnimationTimeout timeoutAnimation = new AnimationTimeout(15);
 
-    static {
+	static {
         textureChancellor = new Texture(Gdx.files.internal("image/chancellor.png"));
         TTFont f = new TTFont(Gdx.files.internal("font/MontserratRegular.ttf"));
 
@@ -64,82 +72,48 @@ public class AnimationWildChancellorAppear implements IAnimation {
 	    for(int i = 1; i <= handCount; i++)
 	    	textureHands.add(new Texture(Gdx.files.internal("capture/hand" + i + ".png")));
 	    textureMasterBall = new Texture(Gdx.files.internal("capture/master-ball.png"));
+
+	    captureData = CaptureData.getData();
     }
 
-	private class Strip {
-		private final AnimationWildChancellorAppear animation;
-        private float width;
-        private float heightBound;
-        private float velocity;
-        private float x;
-        private float y;
-        private int height;
-
-        public Strip(float heightBound, AnimationWildChancellorAppear animation) {
-			this.animation = animation;
-			this.heightBound = heightBound;
-			reset(false);
-		}
-
-		public void reset(boolean xFromEnd) {
-			velocity = nextFloat(200f) + 70;
-			width = nextFloat(7.5f) + 50;
-			height = rnd.nextInt(3) + 1;
-			y = nextFloat(heightBound - height);
-
-			if (xFromEnd) {
-			    x = Gdx.graphics.getWidth();
-            } else {
-                x = nextFloat(Gdx.graphics.getWidth() + width) + 20;
-            }
-		}
-
-		public void tick(float delta, float offsetY) {
-			x -= velocity * delta;
-			if (x + width < 0) {
-				reset(true);
-			}
-
-			this.draw(offsetY);
-		}
-
-		private void draw(float offsetY) {
-			shape.begin(ShapeRenderer.ShapeType.Filled);
-			shape.setColor(Color.WHITE);
-			shape.line(x, offsetY + y, x + width, offsetY + y + height);
-			shape.end();
-		}
-	}
-
 	private final static int heightBound = 90;
-	private final List<Strip> strips;
+	private final List<WhiteStrip> strips;
     private final Table table = new Table();
-	public AnimationWildChancellorAppear(RoboticonQuest game, Skin skin) {
+	public WildChancellorAppear(RoboticonQuest game, Skin skin) {
 	    this.game = game;
 	    processor = Gdx.input.getInputProcessor();
 	    stage = new Stage();
 
+        chancellType = CaptureData.randomType();
 		int count = rnd.nextInt(30) + 20;
-		strips = new ArrayList<Strip>(count);
+		strips = new ArrayList<WhiteStrip>(count);
 		for (int i = 0; i < count; i++) {
-			strips.add(new Strip(heightBound, this));
+			strips.add(new WhiteStrip(heightBound, this));
 		}
 
-		TextButton btnCapture = new TextButton("Capture ($20)", skin);
-		btnCapture.pad(10);
+		float padLeft;
 
-		TextButton btnLeave = new TextButton("Leave", skin);
-		btnLeave.pad(10);
-		float padLeft = (btnCapture.getPrefWidth() - btnLeave.getPrefWidth()) / 2 + 10;
-		btnLeave.pad(10, padLeft, 10, padLeft);
+		TextButton btnMasterBall = new TextButton("Master Ball ($20)", skin);
 
-		table.add(btnCapture).padRight(30);
+		TextButton btnFight = new TextButton("Fight ($10)", skin);
+		padLeft = (btnMasterBall.getPrefWidth() - btnFight.getPrefWidth()) / 2 + 20;
+		btnFight.pad(20, padLeft, 20, padLeft);
+
+
+		TextButton btnLeave = new TextButton("Run Away", skin);
+		padLeft = (btnMasterBall.getPrefWidth() - btnLeave.getPrefWidth()) / 2 + 20;
+		btnLeave.pad(20, padLeft, 20, padLeft);
+
+		btnMasterBall.pad(20);
+
+		table.add(btnFight).padRight(30);
+		table.add(btnMasterBall).padRight(30);
         table.add(btnLeave);
         table.setX((Gdx.graphics.getWidth()) / 2);
-        table.setY((Gdx.graphics.getHeight() - table.getPrefHeight()) / 2 );
+        table.setY((Gdx.graphics.getHeight() - table.getPrefHeight()) / 2);
         stage.addActor(table);
 
-        btnCapture.addListener(new ChangeListener() {
+        btnMasterBall.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
 	            timeoutAnimation.setAnimationFinish(null);
@@ -160,11 +134,27 @@ public class AnimationWildChancellorAppear implements IAnimation {
                 cancelAnimation();
             }
         });
-
-        game.gameScreen.addAnimation(timeoutAnimation);
 	}
 
 	float captureTime;
+
+
+	@Override
+	public void setupScreen(AbstractAnimationScreen abstractAnimationScreen) {
+		super.setupScreen(abstractAnimationScreen);
+
+		size = screen.getScreenSize();
+		shadowHeight = (size.Height - heightBound) / 2;
+
+		float offsetY = shadowHeight + overlayOffsetY;
+
+		for (WhiteStrip strip : strips) {
+			// Draw shadow and background
+			strip.setOffsetY(offsetY);
+		}
+
+		screen.addAnimation(timeoutAnimation);
+	}
 
     private void captureChancellor() {
 	    captureTime = time;
@@ -182,13 +172,8 @@ public class AnimationWildChancellorAppear implements IAnimation {
     }
 
     @Override
-	public boolean tick(float delta, AbstractAnimationScreen screen, Batch batch) {
-	    time += delta;
+	public boolean tickDelta(float delta, Batch batch) {
         Gdx.input.setInputProcessor(stage);
-
-		// Draw shadow and background
-		AbstractAnimationScreen.Size size = screen.getScreenSize();
-		float shadowHeight = (size.Height - heightBound) / 2;
 
         Gdx.gl.glEnable(GL20.GL_BLEND);
         Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
@@ -209,21 +194,30 @@ public class AnimationWildChancellorAppear implements IAnimation {
 		shape.end();
         Gdx.gl.glDisable(GL20.GL_BLEND);
 
-
         // Draw strips
-		for (Strip strip : strips) {
-			strip.tick(delta, shadowHeight + overlayOffsetY);
-		}
+	    for (WhiteStrip strip : strips) {
+		    strip.tick(delta, batch);
+	    }
 
-		// Draw Chancellor
         batch.begin();
+	    // Draw event name
 		fontTitle.draw(batch, "A wild Chancellor has appeared!",
                 size.Width / 2,
                 (size.Height - fontTitle.getLineHeight()) / 2 + overlayOffsetY + heightBound + 20,
                 0, Align.center, false);
+
+        // Draw Chancellor
 		batch.draw(textureChancellor,
                 (size.Width - textureChancellor.getWidth()) / 2,
                 (size.Height - textureChancellor.getHeight()) / 2 + overlayOffsetY + 10);
+
+        // Draw Chancellor type
+        fontText.setColor(Color.BLACK);
+        fontText.draw(batch, chancellType.toString(),
+                size.Width / 2 + textureChancellor.getWidth() / 2 + 20,
+                size.Height / 2 + overlayOffsetY + textureChancellor.getHeight() - 20,
+                0, Align.left, false);
+
 		batch.end();
 
         stage.act(delta);
@@ -247,6 +241,9 @@ public class AnimationWildChancellorAppear implements IAnimation {
 		        break;
 
 	        case CaptureSuccess:
+		        break;
+
+	        case CaptureTimeout:
 		        break;
         }
 
@@ -300,6 +297,11 @@ public class AnimationWildChancellorAppear implements IAnimation {
 		MasterBallThrown,
 		CaptureInProgress,
         CaptureFailed,
-        CaptureSuccess
+        CaptureSuccess,
+		CaptureTimeout,
+
+        WaitFightAction,
+        DoFightAction,
+        FightResult
     }
 }

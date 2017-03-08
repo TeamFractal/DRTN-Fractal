@@ -19,7 +19,7 @@ import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import io.github.teamfractal.entity.Player;
 import io.github.teamfractal.screens.AbstractAnimationScreen;
 
-public class AnimationShowPlayer implements IAnimation {
+public class AnimationShowPlayer extends AbstractAnimation implements IAnimation {
 	private float time;
 	private static BitmapFont font = new BitmapFont();
 	private static GlyphLayout glyphLayout = new GlyphLayout();
@@ -28,7 +28,6 @@ public class AnimationShowPlayer implements IAnimation {
 	public AnimationShowPlayer (int playerNumber) {
 		this.playerNumber = playerNumber;
 	}
-
 
 	/**
 	 * Generate and concat resource strings.
@@ -64,14 +63,11 @@ public class AnimationShowPlayer implements IAnimation {
 
 	/**
 	 * Render call.
-	 * @param delta     Time change since last call.
-	 * @param screen    The screen to draw on.
 	 * @param batch     The Batch for drawing stuff.
 	 * @return          return <code>true</code> if the animation has completed.
 	 */
 	@Override
-	public boolean tick(float delta, AbstractAnimationScreen screen, Batch batch) {
-		time += delta;
+	public boolean tick(Batch batch) {
 		if (time > animationLength) {
 			return true;
 		}
@@ -84,24 +80,5 @@ public class AnimationShowPlayer implements IAnimation {
 		font.draw(batch, glyphLayout, size.Width / 2 - glyphLayout.width / 2, size.Height - 20 - fn_quad(time) * 30);
 		batch.end();
 		return false;
-	}
-
-
-
-
-
-	@Override
-	public void setAnimationFinish(IAnimationFinish callback) {
-
-	}
-
-	@Override
-	public void callAnimationFinish() {
-
-	}
-
-	@Override
-	public void cancelAnimation() {
-
 	}
 }

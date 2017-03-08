@@ -20,11 +20,8 @@ import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import io.github.teamfractal.RoboticonQuest;
 import io.github.teamfractal.screens.AbstractAnimationScreen;
 
-public class AnimationTimeout implements IAnimation {
+public class AnimationTimeout extends AbstractAnimation implements IAnimation {
     private final float timeout;
-    private float time;
-    private IAnimationFinish callback;
-    private boolean callbackDone;
     private static final BitmapFont font;
     private static final ShapeRenderer rect = new ShapeRenderer();
     private static final GlyphLayout glyphLayout = new GlyphLayout();
@@ -43,14 +40,6 @@ public class AnimationTimeout implements IAnimation {
     }
 
     /**
-     * Check if the animation should continue or not.
-     * @return  <code>true</code> if the animation should continue.
-     */
-    protected boolean continueAnimation() {
-        return !callbackDone;
-    }
-
-    /**
      * Count down bar colour changes from green to red overtime.
      */
     private void barColour() {
@@ -62,17 +51,12 @@ public class AnimationTimeout implements IAnimation {
     /**
      * Draw animation on screen.
      *
-     * @param delta     Time change since last call.
-     * @param screen    The screen to draw on.
      * @param batch     The Batch for drawing stuff.
      * @return          return <code>true</code> if the animation has completed.
      */
     @Override
-    public boolean tick(float delta, AbstractAnimationScreen screen, Batch batch) {
-        if (!continueAnimation()) return true;
-
+    public boolean tick(Batch batch) {
         AbstractAnimationScreen.Size size = screen.getScreenSize();
-        time += delta;
 
         if (time >= timeout) return true;
 
@@ -96,25 +80,5 @@ public class AnimationTimeout implements IAnimation {
         }
 
         return false;
-    }
-
-    @Override
-    public void setAnimationFinish(IAnimationFinish callback) {
-        this.callback = callback;
-    }
-
-    @Override
-    public void callAnimationFinish() {
-        if (continueAnimation()) {
-            callbackDone = true;
-
-            if (callback != null)
-                callback.OnAnimationFinish();
-        }
-    }
-
-    @Override
-    public void cancelAnimation() {
-        callbackDone = true;
     }
 }

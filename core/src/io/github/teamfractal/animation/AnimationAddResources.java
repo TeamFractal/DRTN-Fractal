@@ -5,13 +5,14 @@ import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import io.github.teamfractal.entity.Player;
 import io.github.teamfractal.screens.AbstractAnimationScreen;
 
-public class AnimationAddResources implements IAnimation {
+public class AnimationAddResources extends AbstractAnimation implements IAnimation {
 	private final Player player;
 	private final int energy;
 	private final int food;
 	private final int ore;
 	private float time;
 	private static BitmapFont font = new BitmapFont();
+	private AbstractAnimationScreen screen;
 
 	/**
 	 * Initialise the animation.
@@ -88,14 +89,11 @@ public class AnimationAddResources implements IAnimation {
 
 	/**
 	 * Render call.
-	 * @param delta     Time change since last call.
-	 * @param screen    The screen to draw on.
 	 * @param batch     The Batch for drawing stuff.
 	 * @return          return <code>true</code> if the animation has completed.
 	 */
 	@Override
-	public boolean tick(float delta, AbstractAnimationScreen screen, Batch batch) {
-		time += delta;
+	public boolean tick(Batch batch) {
 		if (time > animationLength) {
 			return true;
 		}
@@ -132,7 +130,7 @@ public class AnimationAddResources implements IAnimation {
 	 */
 	@Override
 	public void cancelAnimation() {
-		callback = null;
+		super.cancelAnimation();
 		time += animationLength;
 	}
 }
