@@ -62,14 +62,14 @@
     }
   ],
 
-  "capture events": [
+  "fight actions": [
     {
       "type": "Water",
       "name": "Water Gun",
-      "success": "Chancellor fainted.[wait 0.5]\nYou have now captured the chancellor and received <price>!",
+      "success": "Chancellor fainted.     \nYou have now captured the chancellor and received <price>!",
       "fail": [
         {
-          "message": "Chancellor has grown as water injected to the body.[wait 0.5]\nChancellor tried to escape and cause you to lose <cost>.",
+          "message": "Chancellor has grown as water injected to the body.     \nChancellor tried to escape and cause you to lose <cost>.",
           "cost": {
             "roboticon": [0, 0],
             "food": [1, 3],
@@ -83,10 +83,10 @@
     {
       "type": "Fire",
       "name": "Flare Blitz",
-      "success": "Chancellor got burnt![wait 0.5]\nYou have now captured the chancellor and received <price>!",
+      "success": "Chancellor got burnt!     \nYou have now captured the chancellor and received <price>!",
       "fail": [
         {
-          "message": "Chancellor has grown as water injected to the body.[wait 0.5]\nChancellor tried to escape and cause you to lose <cost>.",
+          "message": "Chancellor has grown as water injected to the body.     \nChancellor tried to escape and cause you to lose <cost>.",
           "cost": {
             "roboticon": [0, 0],
             "food": [1, 3],
@@ -100,10 +100,10 @@
     {
       "type": "Grass",
       "name": "Leafage",
-      "success": "Chancellor got pelt by leaves![wait 0.5]\nYou have now captured the chancellor and received <price>!",
+      "success": "Chancellor got pelt by leaves!     \nYou have now captured the chancellor and received <price>!",
       "fail": [
         {
-          "message": "Chancellor has grown as water injected to the body.[wait 0.5]\nChancellor tried to escape and cause you to lose <cost>.",
+          "message": "Chancellor has grown as water injected to the body.     \nChancellor tried to escape and cause you to lose <cost>.",
           "cost": {
             "roboticon": [0, 0],
             "food": [1, 3],

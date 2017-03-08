@@ -6,7 +6,6 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
-import java.lang.reflect.Array;
 import java.util.List;
 import java.util.Random;
 
@@ -18,8 +17,8 @@ public class CaptureData {
         @SerializedName("Fire")
         Fire,
 
-        @SerializedName("Glass")
-        Glass,
+        @SerializedName("Grass")
+        Grass,
 
         @SerializedName("Water")
         Water
@@ -49,14 +48,32 @@ public class CaptureData {
     @SerializedName("strUseMove")
     public String strUseMove;
 
+    public AttributeRate getRateFromType(AttributeType type) {
+        for (AttributeRate t : attributeRates) {
+            if (t.type == type) {
+                return t;
+            }
+        }
+        return null;
+    }
+
     @Expose
     @SerializedName("attribute rate")
-    public List<AttributeRate> attributeRate = null;
+    public List<AttributeRate> attributeRates = null;
 
     public class AttributeRate {
         @Expose
         @SerializedName("type")
         public AttributeType type;
+
+        public Against getAgainstRateFromType(AttributeType type) {
+            for (Against t : against) {
+                if (t.type == type) {
+                    return t;
+                }
+            }
+            return null;
+        }
 
         @Expose
         @SerializedName("against")
@@ -92,10 +109,10 @@ public class CaptureData {
     }
 
     @Expose
-    @SerializedName("capture events")
-    public List<CaptureEvent> captureEvents = null;
+    @SerializedName("fight actions")
+    public List<FightAction> fightActions = null;
 
-    public class CaptureEvent {
+    public class FightAction {
         @Expose
         @SerializedName("type")
         public AttributeType type;

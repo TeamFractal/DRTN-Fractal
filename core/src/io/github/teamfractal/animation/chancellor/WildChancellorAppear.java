@@ -24,14 +24,22 @@ import io.github.teamfractal.entity.CaptureData;
 import io.github.teamfractal.entity.Player;
 import io.github.teamfractal.screens.AbstractAnimationScreen;
 import io.github.teamfractal.util.TTFont;
+import org.stringtemplate.v4.ST;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
+import static io.github.teamfractal.animation.chancellor.WildChancellorAppear.CaptureState.CaptureFinish;
+import static io.github.teamfractal.animation.chancellor.WildChancellorAppear.CaptureState.FightResult;
+import static io.github.teamfractal.animation.chancellor.WildChancellorAppear.CaptureState.WaitFightAction;
+
 public class WildChancellorAppear extends AbstractAnimation implements IAnimation {
 	private static final Random rnd = new Random();
 	private static final CaptureData captureData;
+	private float endTime;
+	private boolean captureSuccess;
+
 	private static float nextFloat(float max) {
 		return rnd.nextFloat() * max;
 	}
@@ -42,7 +50,7 @@ public class WildChancellorAppear extends AbstractAnimation implements IAnimatio
 	private static final BitmapFont fontTitle;
     private static final BitmapFont fontText;
     private static final int handCount = 4;
-    private static final float handAnimationTime = 0.3f;
+    private static final float handAnimationTime = 0.1f;
 	private static final float handAnimationTotalTime = handAnimationTime * (handCount - 0.5f);
 	private static final List<Texture> textureHands;
 	private static final Texture textureMasterBall;
@@ -55,8 +63,12 @@ public class WildChancellorAppear extends AbstractAnimation implements IAnimatio
     private float shadowHeight;
     private AbstractAnimationScreen.Size size;
     private final CaptureData.AttributeType chancellType;
+    private int chancellorHp = 60;
+	private String promptMessage = "";
+	private Typer typerAnimation;
 
-    AnimationTimeout timeoutAnimation = new AnimationTimeout(15);
+
+	AnimationTimeout timeoutAnimation = new AnimationTimeout(15);
 
 	static {
         textureChancellor = new Texture(Gdx.files.internal("image/chancellor.png"));
@@ -78,7 +90,8 @@ public class WildChancellorAppear extends AbstractAnimation implements IAnimatio
 
 	private final static int heightBound = 90;
 	private final List<WhiteStrip> strips;
-    private final Table table = new Table();
+	private final Table tableActions = new Table();
+	private final Table tableFight = new Table();
 	public WildChancellorAppear(RoboticonQuest game, Skin skin) {
 	    this.game = game;
 	    processor = Gdx.input.getInputProcessor();
@@ -91,6 +104,8 @@ public class WildChancellorAppear extends AbstractAnimation implements IAnimatio
 			strips.add(new WhiteStrip(heightBound, this));
 		}
 
+
+		// Action buttons
 		float padLeft;
 
 		TextButton btnMasterBall = new TextButton("Master Ball ($20)", skin);
@@ -105,13 +120,43 @@ public class WildChancellorAppear extends AbstractAnimation implements IAnimatio
 		btnLeave.pad(20, padLeft, 20, padLeft);
 
 		btnMasterBall.pad(20);
+		
+		
+		// Fight options
+		tableFight.padLeft(30);
+		for (final CaptureData.FightAction action: captureData.fightActions) {
+			TextButton btnAction = new TextButton(action.name, skin);
+			btnAction.addListener(new ChangeListener() {
+				@Override
+				public void changed(ChangeEvent event, Actor actor) {
+					WildChancellorAppear.this.doFight(action);
+				}
+			});
+			btnAction.pad(20);
+			tableFight.add(btnAction).padRight(30);
+		}
+		tableFight.setX((Gdx.graphics.getWidth()) / 2);
+		tableFight.setY((Gdx.graphics.getHeight() - tableFight.getPrefHeight()) / 2);
+		tableFight.setVisible(false);
+		stage.addActor(tableFight);
+		
+		
 
-		table.add(btnFight).padRight(30);
-		table.add(btnMasterBall).padRight(30);
-        table.add(btnLeave);
-        table.setX((Gdx.graphics.getWidth()) / 2);
-        table.setY((Gdx.graphics.getHeight() - table.getPrefHeight()) / 2);
-        stage.addActor(table);
+		tableActions.add(btnFight).padRight(30);
+		tableActions.add(btnMasterBall).padRight(30);
+        tableActions.add(btnLeave);
+        tableActions.setX((Gdx.graphics.getWidth()) / 2);
+        tableActions.setY((Gdx.graphics.getHeight() - tableActions.getPrefHeight()) / 2);
+        stage.addActor(tableActions);
+
+        btnFight.addListener(new ChangeListener() {
+	        @Override
+	        public void changed(ChangeEvent event, Actor actor) {
+		        tableFight.setVisible(true);
+		        tableActions.setVisible(false);
+		        state = WaitFightAction;
+	        }
+        });
 
         btnMasterBall.addListener(new ChangeListener() {
             @Override
@@ -134,9 +179,36 @@ public class WildChancellorAppear extends AbstractAnimation implements IAnimatio
                 cancelAnimation();
             }
         });
+        typerAnimation = new Typer(this,20, 20, fontText);
 	}
 
-	float captureTime;
+	private void doFight(CaptureData.FightAction action) {
+		CaptureData.AttributeRate rate = captureData.getRateFromType(action.type);
+		CaptureData.AttributeRate.Against againstRate = rate.getAgainstRateFromType(chancellType);
+		double multiplier = againstRate.multiplier;
+
+		double dmg = (rnd.nextInt(40) + 40) * multiplier;
+
+		// TODO: Cost and price
+		if (dmg > chancellorHp) {
+			ST successText = new ST(action.success);
+			successText.add("price", "nothing");
+
+			typerAnimation.setText(successText.render());
+			state = CaptureState.FightSuccessTyping;
+		} else {
+			CaptureData.FightAction.Fail fail = action.fail.get(rnd.nextInt(action.fail.size()));
+			ST failText = new ST(fail.message);
+			failText.add("cost", "nothing");
+
+			typerAnimation.setText(failText.render());
+			state = CaptureState.FightFailTyping;
+		}
+		tableFight.setVisible(false);
+		timeoutAnimation.cancelAnimation();
+	}
+
+	float eventTime;
 
 
 	@Override
@@ -154,14 +226,15 @@ public class WildChancellorAppear extends AbstractAnimation implements IAnimatio
 		}
 
 		screen.addAnimation(timeoutAnimation);
+		screen.addAnimation(typerAnimation);
 	}
 
     private void captureChancellor() {
-	    captureTime = time;
+	    eventTime = time;
         Player player = game.getPlayer();
         if (player.getMoney() >= 20) {
             player.setMoney(player.getMoney() - 20);
-            table.setVisible(false);
+            tableActions.setVisible(false);
             doCaptureAnimation();
         }
     }
@@ -217,6 +290,7 @@ public class WildChancellorAppear extends AbstractAnimation implements IAnimatio
                 size.Width / 2 + textureChancellor.getWidth() / 2 + 20,
                 size.Height / 2 + overlayOffsetY + textureChancellor.getHeight() - 20,
                 0, Align.left, false);
+	    fontText.setColor(Color.WHITE);
 
 		batch.end();
 
@@ -224,51 +298,36 @@ public class WildChancellorAppear extends AbstractAnimation implements IAnimatio
         stage.draw();
 
         switch (state) {
-	        case WaitInput:
-	            // DO NOTHING
-		        break;
-
 	        case BeginCapture:
 	        	renderCaptureAnimation(batch);
 		        break;
 
-	        case MasterBallThrown:
+	        case CaptureFinish:
+	        case FightResult:
+	        	if (time >= endTime) {
+	        		return true;
+		        }
 		        break;
 
 	        case CaptureInProgress:
-		        break;
-
-	        case CaptureFailed:
-		        break;
-
-	        case CaptureSuccess:
-		        break;
-
-	        case CaptureTimeout:
-		        break;
-
-	        case WaitFightAction:
-		        break;
-
-	        case DoFightAction:
-		        break;
-
-	        case FightResult:
-		        break;
+	        	break;
         }
 
 
         // Debug: Draw current state name.
+
         batch.begin();
         fontText.setColor(Color.WHITE);
-        fontText.draw(batch, "STATE: " + state.toString(), 20, 20);
+        fontText.draw(batch, "STATE: " + state.toString(), 100, 20);
         batch.end();
+
+
 
 	    return eventEnd;
 	}
 
 	private void renderCaptureAnimation(Batch batch) {
-		float t = time - captureTime;
+		float t = time - eventTime;
 
 		int handIndex = (int)Math.floor(t / handAnimationTime);
 		if (handIndex >= handCount)
@@ -285,40 +344,59 @@ public class WildChancellorAppear extends AbstractAnimation implements IAnimatio
 		fontText.draw(batch, game.getPlayerName() + " has thrown master ball!", 20, 20);
 
 		if (t > 6.3f) {
-			state = CaptureState.MasterBallThrown;
+			state = CaptureState.CaptureInProgress;
+			captureSuccess = rnd.nextBoolean();
+			typerAnimation.setInterval(0.3);
+			typerAnimation.setText("1, 2, ...   ");
+			eventTime = time;
 		}
 
 		batch.end();
 	}
 
 	@Override
-	public void setAnimationFinish(IAnimationFinish callback) {
+	public void cancelAnimation() {
+        eventEnd = true;
+		timeoutAnimation.cancelAnimation();
+		typerAnimation.cancelAnimation();
+	}
 
+	public void typeFinish() {
+		System.out.println("typeFinish: " + state.toString());
+		switch (state) {
+			case FightSuccessTyping:
+			case FightFailTyping:
+				state = FightResult;
+				endTime = time + 5;
+				break;
+
+			case CaptureInProgress:
+				state = CaptureFinish;
+				typerAnimation.setInterval(0.1);
+				if (captureSuccess) {
+					typerAnimation.setText("You have captured the chancellor!");
+				} else {
+					typerAnimation.setText("You have failed to capture the chancellor!");
+				}
+				endTime = time + 5;
+		}
 	}
 
 	@Override
 	public void callAnimationFinish() {
-
-	}
-
-	@Override
-	public void cancelAnimation() {
-        eventEnd = true;
-		timeoutAnimation.cancelAnimation();
-		timeoutAnimation.setAnimationFinish(null);
+		cancelAnimation();
 	}
 
 	enum CaptureState {
 	    WaitInput,
 		BeginCapture,
-		MasterBallThrown,
 		CaptureInProgress,
-        CaptureFailed,
-        CaptureSuccess,
+        CaptureFinish,
 		CaptureTimeout,
 
         WaitFightAction,
-        DoFightAction,
+		FightSuccessTyping,
+		FightFailTyping,
         FightResult
     }
 }
