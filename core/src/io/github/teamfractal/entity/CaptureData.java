@@ -90,9 +90,18 @@ public class CaptureData {
         }
     }
 
+    public String getCommentFromMultiplier(double multiplier) {
+        for (AttributeRateComment comment: attributeRateComments) {
+            if (comment.min <= multiplier && multiplier <= comment.max) {
+                return comment.comment;
+            }
+        }
+        return null;
+    }
+
     @Expose
     @SerializedName("attribute rate comment")
-    public List<AttributeRateComment> attributeRateComment = null;
+    public List<AttributeRateComment> attributeRateComments = null;
 
     public class AttributeRateComment {
         @Expose

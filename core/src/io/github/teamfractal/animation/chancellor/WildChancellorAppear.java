@@ -182,8 +182,24 @@ public class WildChancellorAppear extends AbstractAnimation implements IAnimatio
         typerAnimation = new Typer(this,20, 20, fontText);
 	}
 
+	CaptureData.FightAction lastFightAction;
 	private void doFight(CaptureData.FightAction action) {
-		CaptureData.AttributeRate rate = captureData.getRateFromType(action.type);
+		lastFightAction = action;
+
+		CaptureData.AttributeRate rate = captureData.getRateFromType(lastFightAction.type);
+		CaptureData.AttributeRate.Against againstRate = rate.getAgainstRateFromType(chancellType);
+		String comment = captureData.getCommentFromMultiplier(againstRate.multiplier);
+
+		String str = game.getPlayerName() + " have used " + action.name + "!                     ";
+		if (comment != null) {
+			str += "\nIt's " + comment + "                      ";
+		}
+		typerAnimation.setText(str);
+
+	}
+
+	private void doFightResultText () {
+		CaptureData.AttributeRate rate = captureData.getRateFromType(lastFightAction.type);
 		CaptureData.AttributeRate.Against againstRate = rate.getAgainstRateFromType(chancellType);
 		double multiplier = againstRate.multiplier;
 
@@ -191,13 +207,13 @@ public class WildChancellorAppear extends AbstractAnimation implements IAnimatio
 
 		// TODO: Cost and price
 		if (dmg > chancellorHp) {
-			ST successText = new ST(action.success);
+			ST successText = new ST(lastFightAction.success);
 			successText.add("price", "nothing");
 
 			typerAnimation.setText(successText.render());
 			state = CaptureState.FightSuccessTyping;
 		} else {
-			CaptureData.FightAction.Fail fail = action.fail.get(rnd.nextInt(action.fail.size()));
+			CaptureData.FightAction.Fail fail = lastFightAction.fail.get(rnd.nextInt(lastFightAction.fail.size()));
 			ST failText = new ST(fail.message);
 			failText.add("cost", "nothing");
 
@@ -315,12 +331,12 @@ public class WildChancellorAppear extends AbstractAnimation implements IAnimatio
 
 
         // Debug: Draw current state name.
-
+		/*
         batch.begin();
         fontText.setColor(Color.WHITE);
-        fontText.draw(batch, "STATE: " + state.toString(), 100, 20);
+        fontText.draw(batch, "STATE: " + state.toString(), 300, 20);
         batch.end();
-
+		*/
 
 
 	    return eventEnd;
@@ -364,6 +380,10 @@ public class WildChancellorAppear extends AbstractAnimation implements IAnimatio
 	public void typeFinish() {
 		System.out.println("typeFinish: " + state.toString());
 		switch (state) {
+			case WaitFightAction:
+				doFightResultText();
+				break;
+
 			case FightSuccessTyping:
 			case FightFailTyping:
 				state = FightResult;
