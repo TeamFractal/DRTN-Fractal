@@ -225,6 +225,7 @@ public class WildChancellorAppear extends AbstractAnimation implements IAnimatio
 
         switch (state) {
 	        case WaitInput:
+	            // DO NOTHING
 		        break;
 
 	        case BeginCapture:
@@ -245,7 +246,23 @@ public class WildChancellorAppear extends AbstractAnimation implements IAnimatio
 
 	        case CaptureTimeout:
 		        break;
+
+	        case WaitFightAction:
+		        break;
+
+	        case DoFightAction:
+		        break;
+
+	        case FightResult:
+		        break;
         }
+
+
+        // Debug: Draw current state name.
+        batch.begin();
+        fontText.setColor(Color.WHITE);
+        fontText.draw(batch, "STATE: " + state.toString(), 20, 20);
+        batch.end();
 
 	    return eventEnd;
 	}
