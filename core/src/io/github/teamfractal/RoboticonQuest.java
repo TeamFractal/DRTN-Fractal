@@ -221,7 +221,6 @@ public class RoboticonQuest extends Game {
 	 * Implements the functionality of the current phase
 	 */
     private void implementPhase() {
-	    gameScreen.addAnimation(new WildChancellorAppear(this, skin));
         System.out.println("RoboticonQuest::nextPhase -> newPhaseState: " + phase);
 
 		switch (phase) {
@@ -298,12 +297,14 @@ public class RoboticonQuest extends Game {
 				this.getPlayer().takeTurn(5);
 				break;
 
-			// End phase - CLean up and move to next player.
+			// End phase - Clean up and move to next player.
 			case 6:
                 if (!captureChancellor()) {
-                	cleanUpForNextTurn();
+                	break;
                 }
 
+			case 7:
+				cleanUpForNextTurn();
 				// No "break;" here!
 				// Let the game to do phase 1 preparation.
 
@@ -332,6 +333,7 @@ public class RoboticonQuest extends Game {
         		this.getPlayer().takeTurn(1);
 				break;
 		}
+	    captureChancellor();
 
 	    if (gameScreen != null) {
 		    if (!(getPlayer() instanceof AIPlayer)) {
@@ -362,8 +364,8 @@ public class RoboticonQuest extends Game {
 	private boolean captureChancellor() {
     	boolean b = rnd.nextBoolean();
 
-    	if (b) {
-
+    	if (b || true) {
+		    gameScreen.addAnimation(new WildChancellorAppear(this, skin));
 	    }
 
 		return b;

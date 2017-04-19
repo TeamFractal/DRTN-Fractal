@@ -48,6 +48,18 @@ public class CaptureData {
     @SerializedName("strUseMove")
     public String strUseMove;
 
+    @Expose
+    @SerializedName("strBeginMasterBall")
+    public String strBeginMasterBall;
+
+    @Expose
+    @SerializedName("strCaptureSuccess")
+    public String strCaptureSuccess;
+
+    @Expose
+    @SerializedName("strCaptureFail")
+    public String strCaptureFail;
+
     public AttributeRate getRateFromType(AttributeType type) {
         for (AttributeRate t : attributeRates) {
             if (t.type == type) {

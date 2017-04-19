@@ -30,9 +30,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-import static io.github.teamfractal.animation.chancellor.WildChancellorAppear.CaptureState.CaptureFinish;
-import static io.github.teamfractal.animation.chancellor.WildChancellorAppear.CaptureState.FightResult;
-import static io.github.teamfractal.animation.chancellor.WildChancellorAppear.CaptureState.WaitFightAction;
+import static io.github.teamfractal.animation.chancellor.WildChancellorAppear.CaptureState.*;
 
 public class WildChancellorAppear extends AbstractAnimation implements IAnimation {
 	private static final Random rnd = new Random();
@@ -50,8 +48,7 @@ public class WildChancellorAppear extends AbstractAnimation implements IAnimatio
 	private static final BitmapFont fontTitle;
     private static final BitmapFont fontText;
     private static final int handCount = 4;
-    private static final float handAnimationTime = 0.1f;
-	private static final float handAnimationTotalTime = handAnimationTime * (handCount - 0.5f);
+    private static final float handAnimationTime = 0.2f;
 	private static final List<Texture> textureHands;
 	private static final Texture textureMasterBall;
 
@@ -65,7 +62,7 @@ public class WildChancellorAppear extends AbstractAnimation implements IAnimatio
     private final CaptureData.AttributeType chancellType;
     private int chancellorHp = 60;
 	private String promptMessage = "";
-	private Typer typerAnimation;
+	private TypeAnimation typeAnimation;
 
 
 	AnimationTimeout timeoutAnimation = new AnimationTimeout(15);
@@ -129,6 +126,7 @@ public class WildChancellorAppear extends AbstractAnimation implements IAnimatio
 			btnAction.addListener(new ChangeListener() {
 				@Override
 				public void changed(ChangeEvent event, Actor actor) {
+					timeoutAnimation.cancelAnimation();
 					WildChancellorAppear.this.doFight(action);
 				}
 			});
@@ -179,7 +177,7 @@ public class WildChancellorAppear extends AbstractAnimation implements IAnimatio
                 cancelAnimation();
             }
         });
-        typerAnimation = new Typer(this,20, 20, fontText);
+        typeAnimation = new TypeAnimation(this,20, 20, fontText);
 	}
 
 	CaptureData.FightAction lastFightAction;
@@ -194,7 +192,7 @@ public class WildChancellorAppear extends AbstractAnimation implements IAnimatio
 		if (comment != null) {
 			str += "\nIt's " + comment + "                      ";
 		}
-		typerAnimation.setText(str);
+		typeAnimation.setText(str);
 
 	}
 
@@ -210,14 +208,14 @@ public class WildChancellorAppear extends AbstractAnimation implements IAnimatio
 			ST successText = new ST(lastFightAction.success);
 			successText.add("price", "nothing");
 
-			typerAnimation.setText(successText.render());
+			typeAnimation.setText(successText.render());
 			state = CaptureState.FightSuccessTyping;
 		} else {
 			CaptureData.FightAction.Fail fail = lastFightAction.fail.get(rnd.nextInt(lastFightAction.fail.size()));
 			ST failText = new ST(fail.message);
 			failText.add("cost", "nothing");
 
-			typerAnimation.setText(failText.render());
+			typeAnimation.setText(failText.render());
 			state = CaptureState.FightFailTyping;
 		}
 		tableFight.setVisible(false);
@@ -242,7 +240,7 @@ public class WildChancellorAppear extends AbstractAnimation implements IAnimatio
 		}
 
 		screen.addAnimation(timeoutAnimation);
-		screen.addAnimation(typerAnimation);
+		screen.addAnimation(typeAnimation);
 	}
 
     private void captureChancellor() {
@@ -342,6 +340,8 @@ public class WildChancellorAppear extends AbstractAnimation implements IAnimatio
 	    return eventEnd;
 	}
 
+	private float ballPosX;
+	private float ballPosY;
 	private void renderCaptureAnimation(Batch batch) {
 		float t = time - eventTime;
 
@@ -350,31 +350,53 @@ public class WildChancellorAppear extends AbstractAnimation implements IAnimatio
 			handIndex = handCount - 1;
 
 		batch.begin();
-		batch.draw(textureHands.get(handIndex), -40 * Math.max(0, t - handAnimationTotalTime), 0);
+		// Move hand to left
+		batch.draw(textureHands.get(handIndex), -100 * t, 0);
 
 		// Ball move from (70, 185).
-		float x = t * 60f;
-		batch.draw(textureMasterBall, 70 + x, (float)Math.sqrt(x) * t + 185);
+		calcBallPos(70, 185, 380, 350, t, 0.8f);
+		batch.draw(textureMasterBall, ballPosX, ballPosY);
 
 		// fontText.draw(batch, "t: " + t, 20, 20);
 		fontText.draw(batch, game.getPlayerName() + " has thrown master ball!", 20, 20);
 
-		if (t > 6.3f) {
+		if (t > 1f) {
 			state = CaptureState.CaptureInProgress;
 			captureSuccess = rnd.nextBoolean();
-			typerAnimation.setInterval(0.3);
-			typerAnimation.setText("1, 2, ...   ");
+			typeAnimation.setText(captureData.strBeginMasterBall);
 			eventTime = time;
 		}
 
 		batch.end();
 	}
 
+	private float sq(float x) {
+		return x * x;
+	}
+
+	private void calcBallPos(float startX, float startY, float endX, float endY, float currentTime, float totalTime) {
+		double w = endX - startX;
+		double h = endY - startY;
+		double x = currentTime / totalTime * w;
+
+		// Calculate param <r>.
+		// Formula: y = -((x - w) * r)^2 + h
+		// When x = 0, y = 0.
+		// 0 = - (-w * r)^2 + h
+		// (w * r)^2 = h
+		// Take positive solution
+		// w * r = sqrt(h)
+		// r = sqrt(h) / w
+		double r = Math.sqrt(h) / w;
+		ballPosY = startY + (float)(h - Math.pow((x - w) * r, 2));
+		ballPosX = startX + (float)x;
+	}
+
 	@Override
 	public void cancelAnimation() {
         eventEnd = true;
 		timeoutAnimation.cancelAnimation();
-		typerAnimation.cancelAnimation();
+		typeAnimation.cancelAnimation();
 	}
 
 	public void typeFinish() {
@@ -384,6 +406,11 @@ public class WildChancellorAppear extends AbstractAnimation implements IAnimatio
 				doFightResultText();
 				break;
 
+			case CaptureTextTyping:
+				state = CaptureFinish;
+				endTime = time + 5;
+				break;
+
 			case FightSuccessTyping:
 			case FightFailTyping:
 				state = FightResult;
@@ -391,14 +418,13 @@ public class WildChancellorAppear extends AbstractAnimation implements IAnimatio
 				break;
 
 			case CaptureInProgress:
-				state = CaptureFinish;
-				typerAnimation.setInterval(0.1);
+				state = CaptureTextTyping;
+				typeAnimation.setInterval(0.1);
 				if (captureSuccess) {
-					typerAnimation.setText("You have captured the chancellor!");
+					typeAnimation.setText(captureData.strCaptureSuccess);
 				} else {
-					typerAnimation.setText("You have failed to capture the chancellor!");
+					typeAnimation.setText(captureData.strCaptureFail);
 				}
-				endTime = time + 5;
 		}
 	}
 
@@ -413,6 +439,7 @@ public class WildChancellorAppear extends AbstractAnimation implements IAnimatio
 		CaptureInProgress,
         CaptureFinish,
 		CaptureTimeout,
+		CaptureTextTyping,
 
         WaitFightAction,
 		FightSuccessTyping,
