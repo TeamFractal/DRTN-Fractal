@@ -66,6 +66,9 @@ public class WildChancellorAppear extends AbstractAnimation implements IAnimatio
 
 	AnimationTimeout timeoutAnimation = new AnimationTimeout(15);
 
+	/**
+	 * Get resource ready in the memory.
+	 */
 	static {
         textureChancellor = new Texture(Gdx.files.internal("image/chancellor.png"));
         TTFont f = new TTFont(Gdx.files.internal("font/MontserratRegular.ttf"));
@@ -88,6 +91,12 @@ public class WildChancellorAppear extends AbstractAnimation implements IAnimatio
 	private final List<WhiteStrip> strips;
 	private final Table tableActions = new Table();
 	private final Table tableFight = new Table();
+
+	/**
+	 * Initialise the Chancellor class.
+	 * @param game    The game object.
+	 * @param skin    The UI skin.
+	 */
 	public WildChancellorAppear(RoboticonQuest game, Skin skin) {
 	    this.game = game;
 	    stage = new Stage();
@@ -179,6 +188,11 @@ public class WildChancellorAppear extends AbstractAnimation implements IAnimatio
 	}
 
 	CaptureData.FightAction lastFightAction;
+
+	/**
+	 * Perform one of the fight action and prepare the battle text.
+	 * @param action
+	 */
 	private void doFight(CaptureData.FightAction action) {
 		tableFight.setVisible(false);
 		lastFightAction = action;
@@ -195,6 +209,9 @@ public class WildChancellorAppear extends AbstractAnimation implements IAnimatio
 		typeAnimation.setText(str);
 	}
 
+	/**
+	 * Perform the fight action and prepare the battle text.
+	 */
 	private void doFightResultText () {
 		CaptureData.AttributeRate rate = captureData.getRateFromType(lastFightAction.type);
 		CaptureData.AttributeRate.Against againstRate = rate.getAgainstRateFromType(chancellType);
@@ -232,6 +249,10 @@ public class WildChancellorAppear extends AbstractAnimation implements IAnimatio
 	float eventTime;
 
 
+	/**
+	 * Setup screen.
+	 * @param abstractAnimationScreen  Current screen
+	 */
 	@Override
 	public void setupScreen(AbstractAnimationScreen abstractAnimationScreen) {
 		super.setupScreen(abstractAnimationScreen);
@@ -250,6 +271,9 @@ public class WildChancellorAppear extends AbstractAnimation implements IAnimatio
 		screen.addAnimation(typeAnimation);
 	}
 
+	/**
+	 * Button "Master Ball" callback
+	 */
     private void captureChancellor() {
 	    eventTime = time;
         Player player = game.getPlayer();
@@ -260,11 +284,19 @@ public class WildChancellorAppear extends AbstractAnimation implements IAnimatio
         }
     }
 
-    private void doCaptureAnimation() {
+	/**
+	 * Set animation start flag.
+	 */
+	private void doCaptureAnimation() {
         state = CaptureState.BeginCapture;
-        // TODO: prepare capture text feedback
     }
 
+	/**
+	 * Next rendering frame.
+	 * @param delta   Time escaped
+	 * @param batch   The script batch to draw on.
+	 * @return        True: Animation complete; false otherwise.
+	 */
     @Override
 	public boolean tickDelta(float delta, Batch batch) {
         Gdx.input.setInputProcessor(stage);
@@ -352,6 +384,11 @@ public class WildChancellorAppear extends AbstractAnimation implements IAnimatio
 
 	private float ballPosX;
 	private float ballPosY;
+
+	/**
+	 * Render frames during master ball event.
+	 * @param batch  The sprite batch to draw on.
+	 */
 	private void renderCaptureAnimation(Batch batch) {
 		float t = time - eventTime;
 
@@ -380,10 +417,25 @@ public class WildChancellorAppear extends AbstractAnimation implements IAnimatio
 		batch.end();
 	}
 
+	/**
+	 * Square
+	 * @param x   The number to be squared
+	 * @return    Squared value.
+	 */
 	private float sq(float x) {
 		return x * x;
 	}
 
+	/**
+	 * Calculate the position of the master ball based on time and the parabola.
+	 *
+	 * @param startX      Starting position X
+	 * @param startY      Starting position Y
+	 * @param endX        Top position X
+	 * @param endY        Top position Y
+	 * @param currentTime Current time in scale.
+	 * @param totalTime   Time taken to move from starting point to top point.
+	 */
 	private void calcBallPos(float startX, float startY, float endX, float endY, float currentTime, float totalTime) {
 		double w = endX - startX;
 		double h = endY - startY;
@@ -402,6 +454,9 @@ public class WildChancellorAppear extends AbstractAnimation implements IAnimatio
 		ballPosX = startX + (float)x;
 	}
 
+	/**
+	 * Cancel animation.
+	 */
 	@Override
 	public void cancelAnimation() {
         eventEnd = true;
@@ -409,6 +464,9 @@ public class WildChancellorAppear extends AbstractAnimation implements IAnimatio
 		typeAnimation.cancelAnimation();
 	}
 
+	/**
+	 * Typer event complete callback.
+	 */
 	public void typeFinish() {
 		System.out.println("typeFinish: " + state.toString());
 		switch (state) {
@@ -438,17 +496,22 @@ public class WildChancellorAppear extends AbstractAnimation implements IAnimatio
 		}
 	}
 
+	/**
+	 * Cancel animation on animation finish.
+	 */
 	@Override
 	public void callAnimationFinish() {
 		cancelAnimation();
 	}
 
+	/**
+	 * All possible capture running state.
+	 */
 	enum CaptureState {
 	    WaitInput,
 		BeginCapture,
 		CaptureInProgress,
         CaptureFinish,
-		CaptureTimeout,
 		CaptureTextTyping,
 
         WaitFightAction,
