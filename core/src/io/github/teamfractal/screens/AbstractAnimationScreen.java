@@ -12,7 +12,14 @@ import java.util.Iterator;
 public abstract class AbstractAnimationScreen {
 	protected abstract RoboticonQuest getGame();
 
+	/**
+	 * Animation queue.
+	 */
 	private final ArrayList<IAnimation> animations = new ArrayList<IAnimation>();
+
+	/**
+	 * While rendering, animation queue should not be modified.
+	 */
 	private final ArrayList<IAnimation> queueAnimations = new ArrayList<IAnimation>();
 
 	/**
@@ -41,18 +48,18 @@ public abstract class AbstractAnimationScreen {
 				queueAnimations.clear();
 			}
 
-			Iterator<IAnimation> iterator = animations.iterator();
+			try {
+				Iterator<IAnimation> iterator = animations.iterator();
 
-			while (iterator.hasNext()) {
-				IAnimation animation = iterator.next();
-				if (animation.tick(delta, batch)) {
-					try {
+				while (iterator.hasNext()) {
+					IAnimation animation = iterator.next();
+					if (animation.tick(delta, batch)) {
 						iterator.remove();
-					} catch (ConcurrentModificationException ex) {
-						continue;
+						animation.callAnimationFinish();
 					}
-					animation.callAnimationFinish();
 				}
+			} catch (ConcurrentModificationException ex) {
+				// ignore
 			}
 		}
 	}
@@ -63,6 +70,9 @@ public abstract class AbstractAnimationScreen {
 	 */
 	abstract public Size getScreenSize();
 
+	/**
+	 * Remove all animation present on the screen.
+	 */
 	public void clearAnimation() {
 		synchronized (animations) {
 			synchronized (queueAnimations) {
