@@ -21,6 +21,7 @@ import io.github.teamfractal.animation.IAnimation;
 import io.github.teamfractal.animation.IAnimationFinish;
 import io.github.teamfractal.entity.CaptureData;
 import io.github.teamfractal.entity.Player;
+import io.github.teamfractal.entity.enums.ResourceType;
 import io.github.teamfractal.screens.AbstractAnimationScreen;
 import io.github.teamfractal.util.TTFont;
 import org.stringtemplate.v4.ST;
@@ -204,7 +205,8 @@ public class WildChancellorAppear extends AbstractAnimation implements IAnimatio
 		// TODO: Cost and price
 		if (dmg > chancellorHp) {
 			ST successText = new ST(lastFightAction.success);
-			successText.add("price", "nothing");
+			successText.add("price", "Energy x30");
+			game.getPlayer().setResource(ResourceType.ENERGY, game.getPlayer().getEnergy() + 30);
 
 			typeAnimation.setText(successText.render());
 			state = CaptureState.FightSuccessTyping;
