@@ -1,7 +1,6 @@
 package io.github.teamfractal.animation.chancellor;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
@@ -211,8 +210,15 @@ public class WildChancellorAppear extends AbstractAnimation implements IAnimatio
 			state = CaptureState.FightSuccessTyping;
 		} else {
 			CaptureData.FightAction.Fail fail = lastFightAction.fail.get(rnd.nextInt(lastFightAction.fail.size()));
+			CaptureData.FightAction.Fail.ActualCost actualCost = fail.calculateCost();
 			ST failText = new ST(fail.message);
-			failText.add("cost", "nothing");
+			String costStr = actualCost.toString();
+			if ("".equals(costStr)) {
+				costStr = "\nNothing.";
+			}
+			failText.add("cost", costStr);
+
+			game.getPlayer().applyCost(actualCost);
 
 			typeAnimation.setText(failText.render());
 			state = CaptureState.FightFailTyping;
@@ -318,7 +324,7 @@ public class WildChancellorAppear extends AbstractAnimation implements IAnimatio
 	        case CaptureFinish:
 	        case FightResult:
 	        	if (time >= endTime) {
-	        		return true;
+					eventEnd = true;
 		        }
 		        break;
 

@@ -415,4 +415,10 @@ public class Player {
         System.out.println("Human turn");
     }
 
+	public void applyCost(CaptureData.FightAction.Fail.ActualCost actualCost) {
+		setEnergy(getEnergy() - actualCost.energy);
+		setFood(getFood() - actualCost.food);
+		setOre(getOre() - actualCost.ore);
+		setMoney(getMoney() - actualCost.money);
+	}
 }

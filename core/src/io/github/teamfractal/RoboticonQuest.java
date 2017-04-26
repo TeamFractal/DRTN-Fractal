@@ -275,8 +275,8 @@ public class RoboticonQuest extends Game {
                 timer.scheduleTask(new Timer.Task() {
                     @Override
                     public void run() {
-						nextPhase();
-                        //This check is needed to stop any future phases from being cut short by accident
+                    	if (phase == 4)
+							nextPhase();
                     }
                 }, 3);
                 timer.start();
@@ -300,7 +300,7 @@ public class RoboticonQuest extends Game {
 
 			// End phase - Clean up and move to next player.
 			case 6:
-                if (!captureChancellor()) {
+                if (captureChancellor()) {
                 	break;
                 }
 

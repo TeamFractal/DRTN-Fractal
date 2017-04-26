@@ -159,6 +159,62 @@ public class CaptureData {
             @SerializedName("cost")
             public Cost cost;
 
+            private int randomInt(List<Integer> bounds) {
+                int min = bounds.get(0);
+                int max = bounds.get(1);
+                if (max <= 0) return 0;
+
+                return min + _rnd.nextInt(max);
+            }
+
+            public ActualCost calculateCost() {
+                ActualCost c = new ActualCost();
+                c.roboticon = randomInt(cost.roboticon);
+                c.food = randomInt(cost.food);
+                c.energy = randomInt(cost.energy);
+                c.ore = randomInt(cost.ore);
+                c.money = randomInt(cost.money);
+
+                return c;
+            }
+
+            public class ActualCost {
+                public int roboticon;
+                public int food;
+                public int energy;
+                public int ore;
+                public int money;
+
+                @Override
+                public String toString() {
+                    StringBuilder sb = new StringBuilder(50);
+
+                    /*
+                    if (roboticon > 0) {
+                        sb.append("\nRoboticon  x" + roboticon);
+                    }
+                    */
+
+                    if (food > 0) {
+                        sb.append("\nFood  x" + food);
+                    }
+
+                    if (energy > 0) {
+                        sb.append("\nEnergy  x" + energy);
+                    }
+
+                    if (ore > 0) {
+                        sb.append("\nOre  x" + ore);
+                    }
+
+                    if (money > 0) {
+                        sb.append("\nMoney  x" + money);
+                    }
+
+                    return sb.toString();
+                }
+            }
+
             public class Cost {
                 @Expose
                 @SerializedName("roboticon")
