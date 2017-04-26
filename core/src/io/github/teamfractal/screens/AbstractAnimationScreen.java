@@ -6,6 +6,7 @@ import io.github.teamfractal.RoboticonQuest;
 import io.github.teamfractal.animation.IAnimation;
 
 import java.util.ArrayList;
+import java.util.ConcurrentModificationException;
 import java.util.Iterator;
 
 public abstract class AbstractAnimationScreen {
@@ -45,7 +46,11 @@ public abstract class AbstractAnimationScreen {
 			while (iterator.hasNext()) {
 				IAnimation animation = iterator.next();
 				if (animation.tick(delta, batch)) {
-					iterator.remove();
+					try {
+						iterator.remove();
+					} catch (ConcurrentModificationException ex) {
+						continue;
+					}
 					animation.callAnimationFinish();
 				}
 			}
