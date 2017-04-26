@@ -397,7 +397,7 @@ public class GameScreenActors {
 		if (nextButton.isDisabled()) {
 			return ;
 		}
-        if (game.canPurchaseLandThisTurn() != false) {
+        if (game.canPurchaseLandThisTurn()) {
             return;
         }
         buyLandPlotBtn.setVisible(false);

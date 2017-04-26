@@ -300,9 +300,10 @@ public class RoboticonQuest extends Game {
 
 			// End phase - Clean up and move to next player.
 			case 6:
-                if (captureChancellor()) {
-                	break;
+                if (!captureChancellor()) {
+					cleanUpForNextTurn();
                 }
+				break;
 
 			case 7:
 				cleanUpForNextTurn();
