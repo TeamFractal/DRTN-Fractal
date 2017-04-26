@@ -300,10 +300,12 @@ public class RoboticonQuest extends Game {
 
 			// End phase - Clean up and move to next player.
 			case 6:
-                if (!captureChancellor()) {
+			{
+				if (!captureChancellor()) {
 					cleanUpForNextTurn();
-                }
+				}
 				break;
+			}
 
 			case 7:
 				cleanUpForNextTurn();
@@ -393,7 +395,7 @@ public class RoboticonQuest extends Game {
 	private boolean captureChancellor() {
     	boolean b = rnd.nextBoolean();
 
-    	if (b || true) {
+    	if (b) {
 		    gameScreen.addAnimation(new WildChancellorAppear(this, skin));
 	    }
 

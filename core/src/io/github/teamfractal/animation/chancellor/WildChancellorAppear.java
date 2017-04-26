@@ -345,7 +345,6 @@ public class WildChancellorAppear extends AbstractAnimation implements IAnimatio
 
 		if (eventEnd) {
 			game.nextPhase();
-			game.fixInputFocus();
 		}
 
 	    return eventEnd;
