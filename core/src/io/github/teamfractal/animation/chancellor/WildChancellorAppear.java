@@ -52,7 +52,6 @@ public class WildChancellorAppear extends AbstractAnimation implements IAnimatio
 	private static final List<Texture> textureHands;
 	private static final Texture textureMasterBall;
 
-    private final InputProcessor processor;
     private final Stage stage;
     private final RoboticonQuest game;
     private boolean eventEnd = false;
@@ -60,7 +59,7 @@ public class WildChancellorAppear extends AbstractAnimation implements IAnimatio
     private float shadowHeight;
     private AbstractAnimationScreen.Size size;
     private final CaptureData.AttributeType chancellType;
-    private int chancellorHp = 60;
+    private final int chancellorHp = 60;
 	private String promptMessage = "";
 	private TypeAnimation typeAnimation;
 
@@ -91,7 +90,6 @@ public class WildChancellorAppear extends AbstractAnimation implements IAnimatio
 	private final Table tableFight = new Table();
 	public WildChancellorAppear(RoboticonQuest game, Skin skin) {
 	    this.game = game;
-	    processor = Gdx.input.getInputProcessor();
 	    stage = new Stage();
 
         chancellType = CaptureData.randomType();
@@ -182,18 +180,19 @@ public class WildChancellorAppear extends AbstractAnimation implements IAnimatio
 
 	CaptureData.FightAction lastFightAction;
 	private void doFight(CaptureData.FightAction action) {
+		tableFight.setVisible(false);
 		lastFightAction = action;
 
 		CaptureData.AttributeRate rate = captureData.getRateFromType(lastFightAction.type);
 		CaptureData.AttributeRate.Against againstRate = rate.getAgainstRateFromType(chancellType);
 		String comment = captureData.getCommentFromMultiplier(againstRate.multiplier);
 
-		String str = game.getPlayerName() + " have used " + action.name + "!                     ";
+		String str = game.getPlayerName() + " have used " + action.name + "!\\w{0.5}";
 		if (comment != null) {
-			str += "\nIt's " + comment + "                      ";
+			str += "\nIt's " + comment + "\\w{1} ";
 		}
+		typeAnimation.setInterval(0.1);
 		typeAnimation.setText(str);
-
 	}
 
 	private void doFightResultText () {
@@ -336,6 +335,10 @@ public class WildChancellorAppear extends AbstractAnimation implements IAnimatio
         batch.end();
 		*/
 
+		if (eventEnd) {
+			game.nextPhase();
+			game.fixInputFocus();
+		}
 
 	    return eventEnd;
 	}

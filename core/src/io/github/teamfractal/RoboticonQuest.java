@@ -221,6 +221,7 @@ public class RoboticonQuest extends Game {
 	 * Implements the functionality of the current phase
 	 */
     private void implementPhase() {
+		gameScreen.clearAnimation();
         System.out.println("RoboticonQuest::nextPhase -> newPhaseState: " + phase);
 
 		switch (phase) {
@@ -333,7 +334,6 @@ public class RoboticonQuest extends Game {
         		this.getPlayer().takeTurn(1);
 				break;
 		}
-	    captureChancellor();
 
 	    if (gameScreen != null) {
 		    if (!(getPlayer() instanceof AIPlayer)) {
@@ -347,6 +347,34 @@ public class RoboticonQuest extends Game {
 
 		    gameScreen.getActors().textUpdate();
 	    }
+	}
+
+	public void fixInputFocus () {
+		switch (phase) {
+			case 1:
+				Gdx.input.setInputProcessor(gameScreen.getStage());
+				break;
+
+			case 2:
+				Gdx.input.setInputProcessor(roboticonMarket);
+				break;
+
+			case 3:
+				Gdx.input.setInputProcessor(gameScreen.getStage());
+				break;
+
+			case 4:
+				Gdx.input.setInputProcessor(genOverlay);
+				break;
+
+			case 5:
+				Gdx.input.setInputProcessor(resourceMarket);
+				break;
+
+			default:
+				Gdx.input.setInputProcessor(gameScreen.getStage());
+				break;
+		}
 	}
 
 	private void cleanUpForNextTurn() {

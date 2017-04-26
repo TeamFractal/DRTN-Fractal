@@ -8,6 +8,9 @@ import io.github.teamfractal.animation.AbstractAnimation;
 import io.github.teamfractal.animation.IAnimation;
 import io.github.teamfractal.exception.InvalidControlCharException;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
 public class TypeAnimation extends AbstractAnimation implements IAnimation {
 	private final WildChancellorAppear appearAnimation;
 	double typeInterval = 0.5;
@@ -17,7 +20,6 @@ public class TypeAnimation extends AbstractAnimation implements IAnimation {
 	BitmapFont font;
 	GlyphLayout layout;
 	float lastTime;
-	float waitTime;
 
 	StringBuilder renderStrBuilder = new StringBuilder(255);
 
@@ -56,33 +58,10 @@ public class TypeAnimation extends AbstractAnimation implements IAnimation {
 		return index >= text.length();
 	}
 
-	/**
-	 * Check if we are waiting; if not, update the index.
-	 * @return <code>true</code> if we are waiting, otherwise we are not.
-	 */
-	private boolean waiting() {
-		if (waitTime <= 0) return false;
-
-		waitTime -= lastTime;
-		if (waitTime <= 0) {
-			// subtract neg value = add
-			lastTime = -waitTime;
-			waitTime = 0;
-			return false;
-		}
-
-		lastTime = 0;
-		return true;
-	}
-
 	private void updateString() {
 		while(lastTime >= typeInterval) {
-			while(waiting()) {
-				return ;
-			}
-
-			lastTime -= typeInterval;
 			if (loadChar()) {
+				lastTime -= typeInterval;
 				layout.setText(font, renderStrBuilder.toString());
 			}
 		}
@@ -103,7 +82,6 @@ public class TypeAnimation extends AbstractAnimation implements IAnimation {
 					if (typeInterval < 0.1) {
 						typeInterval = 0.1;
 					}
-					System.out.println("Update typeInterval to " + typeInterval);
 					ignoreWhiteSpace();
 					expectChar('}');
 					break;
@@ -112,7 +90,7 @@ public class TypeAnimation extends AbstractAnimation implements IAnimation {
 					// wait
 					expectChar('{');
 					ignoreWhiteSpace();
-					waitTime += readFloat();
+					lastTime -= readFloat();
 					ignoreWhiteSpace();
 					expectChar('}');
 					break;
@@ -209,7 +187,6 @@ public class TypeAnimation extends AbstractAnimation implements IAnimation {
 		time = 0;
 		index = 0;
 		lastTime = 0;
-		waitTime = 0;
 		renderStrBuilder = new StringBuilder(255);
 		sendNotification = false;
 		this.text = text;

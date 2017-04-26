@@ -58,6 +58,15 @@ public abstract class AbstractAnimationScreen {
 	 */
 	abstract public Size getScreenSize();
 
+	public void clearAnimation() {
+		synchronized (animations) {
+			synchronized (queueAnimations) {
+				animations.clear();
+				queueAnimations.clear();
+			}
+		}
+	}
+
 	/**
 	 * A size structure with Width and Height property.
 	 */
