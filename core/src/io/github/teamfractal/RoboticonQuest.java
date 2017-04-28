@@ -303,6 +303,9 @@ public class RoboticonQuest extends Game {
 			{
 				if (captureChancellor())
 					break;
+
+				// No "break;" when no chancellor appear!
+				// Let the game to clean up and get ready for next phase.
 			}
 
 			case 7:
