@@ -301,10 +301,8 @@ public class RoboticonQuest extends Game {
 			// End phase - Clean up and move to next player.
 			case 6:
 			{
-				if (!captureChancellor()) {
-					cleanUpForNextTurn();
-				}
-				break;
+				if (captureChancellor())
+					break;
 			}
 
 			case 7:
@@ -480,7 +478,9 @@ public class RoboticonQuest extends Game {
 		if(this.currentPlayerIndex == this.playerList.size() -1){
 			this.currentPlayerIndex = 0;
 		}
-		else this.currentPlayerIndex ++;
+		else {
+			this.currentPlayerIndex ++;
+		}
 
 		playerHeader.setText("PLAYER " + (currentPlayerIndex + 1));
 		gameScreen.addAnimation(playerHeader);
