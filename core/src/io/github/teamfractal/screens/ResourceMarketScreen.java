@@ -17,6 +17,7 @@ import com.badlogic.gdx.graphics.Color;
 import io.github.teamfractal.RoboticonQuest;
 import io.github.teamfractal.actors.ResourceMarketActors;
 
+import java.io.File;
 import java.util.Random;
 
 /**
@@ -107,9 +108,18 @@ public class ResourceMarketScreen extends Overlay {
             actors.setGambleStatusLabel("CANNOT AFFORD\nGAMBLE", Color.RED);
             //Check to see if the player can afford to make their specified gamble
         } else {
+            //Roll two die
             playerRoll = rnd.nextInt(6) + 1;
             AIRoll = rnd.nextInt(6) + 1;
-            //Roll two die
+            /*
+            if (new File("cheat.dat").exists()) {
+                if (playerRoll == 1)
+                    playerRoll = 2;
+
+                if (AIRoll >= playerRoll)
+                    AIRoll = playerRoll - 1;
+            }
+            */
 
             if (playerRoll == AIRoll) {
                 actors.setGambleStatusLabel("YOU\nDREW", Color.YELLOW);
