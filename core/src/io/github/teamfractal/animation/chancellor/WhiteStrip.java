@@ -13,12 +13,21 @@ public class WhiteStrip extends AbstractAnimation implements IAnimation {
     private static final ShapeRenderer shape = new ShapeRenderer();
     private static final Random rnd = new Random();
 
+    /**
+     * Sets <code>offsetY</code>.
+     * @param offsetY  The Y cord to display the strip.
+     */
     public void setOffsetY(float offsetY) {
         this.offsetY = offsetY;
     }
 
     private float offsetY;
 
+    /**
+     * Generate a float number between 0 and <code>max</code>.
+     * @param max The upper bound of number generated.
+     * @return    Generated random float number.
+     */
     private static float nextFloat(float max) {
         return rnd.nextFloat() * max;
     }
@@ -31,25 +40,37 @@ public class WhiteStrip extends AbstractAnimation implements IAnimation {
     private float y;
     private int height;
 
+    /**
+     * Init. the class
+     * @param heightBound  The height boundary.
+     * @param animation    The parent animation.
+     */
     public WhiteStrip(float heightBound, WildChancellorAppear animation) {
         this.animation = animation;
         this.heightBound = heightBound;
         reset(false);
     }
 
-    public void reset(boolean xFromEnd) {
+    /**
+     * Reset strip to a random position and speed
+     * @param spawnFromRight Should the strip spawn from right of the screen or random position.
+     */
+    public void reset(boolean spawnFromRight) {
         velocity = nextFloat(200f) + 70;
         width = nextFloat(7.5f) + 50;
         height = rnd.nextInt(3) + 1;
         y = nextFloat(heightBound - height);
 
-        if (xFromEnd) {
+        if (spawnFromRight) {
             x = Gdx.graphics.getWidth();
         } else {
             x = nextFloat(Gdx.graphics.getWidth() + width) + 20;
         }
     }
 
+    /**
+     * Draw the strip.
+     */
     private void draw() {
         shape.begin(ShapeRenderer.ShapeType.Filled);
         shape.setColor(Color.WHITE);
@@ -58,6 +79,9 @@ public class WhiteStrip extends AbstractAnimation implements IAnimation {
     }
 
     @Override
+    /**
+     * Frame render handler
+     */
     protected boolean tickDelta(float delta, Batch batch) {
         x -= velocity * delta;
         if (x + width < 0) {

@@ -25,6 +25,13 @@ public class TypeAnimation extends AbstractAnimation implements IAnimation {
 
 	private boolean sendNotification = false;
 
+	/**
+	 * Init. class
+	 * @param appearAnimation   The parent controller
+	 * @param x                 Text display x cord.
+	 * @param y                 Text display y cord.
+	 * @param font              The font used to draw text
+	 */
 	public TypeAnimation(WildChancellorAppear appearAnimation, float x, float y, BitmapFont font) {
 		this.appearAnimation = appearAnimation;
 		this.x = x;
@@ -34,6 +41,12 @@ public class TypeAnimation extends AbstractAnimation implements IAnimation {
 		layout = new GlyphLayout(font, "");
 	}
 
+	/**
+	 * Render text on each frame
+	 * @param delta  Time difference
+	 * @param batch  <see>ScriptBatch</see> for drawing
+	 * @return       <code>true</code> if finished, <code>otherwise</code>
+	 */
 	@Override
 	protected boolean tickDelta(float delta, Batch batch) {
 		lastTime += delta;
@@ -53,11 +66,18 @@ public class TypeAnimation extends AbstractAnimation implements IAnimation {
 		return false;
 	}
 
+	/**
+	 * Check if string reading is in the end.
+	 * @return
+	 */
 	private boolean endStringLoading() {
 		if (index < 0) index = 0;
 		return index >= text.length();
 	}
 
+	/**
+	 * Calculate the text to draw, based on time.
+	 */
 	private void updateString() {
 		while(lastTime >= typeInterval) {
 			if (loadChar()) {
@@ -67,6 +87,11 @@ public class TypeAnimation extends AbstractAnimation implements IAnimation {
 		}
 	}
 
+	/**
+	 * Read next character from string.
+	 * If a control character is found, is going to perform some actions.
+	 * @return <code>true</code> if the text display buffer has been updated.
+	 */
 	private boolean loadChar() {
 		char c = readChar();
 
@@ -110,12 +135,21 @@ public class TypeAnimation extends AbstractAnimation implements IAnimation {
 		return false;
 	}
 
+	/**
+	 * Skip whitespaces from next string
+	 */
 	private void ignoreWhiteSpace() {
 		while(isWhiteSpace(peekChar())) {
 			index++;
 		}
 	}
 
+
+	/**
+	 * Check if a <code>char</code> is whitespace
+	 * @param c   The <code>char</code> to be checked.
+	 * @return    <code>true</code> if is, <code>false</code> otherwise.
+	 */
 	private boolean isWhiteSpace(char c) {
 		return c == ' '
 				|| c == '\t'
@@ -123,6 +157,11 @@ public class TypeAnimation extends AbstractAnimation implements IAnimation {
 				|| c == '\n';
 	}
 
+	/**
+	 * Ensure the next char is the character requested and move the cursor over.
+	 * It will throw <see>InvalidControlCharException</see> if does not match.
+	 * @param check    Expected character.
+	 */
 	private void expectChar(char check) {
 		char c = readChar();
 		if (c != check) {
@@ -130,6 +169,11 @@ public class TypeAnimation extends AbstractAnimation implements IAnimation {
 		}
 	}
 
+
+	/**
+	 * Read in a float.
+	 * @return   Float read in.
+	 */
 	private float readFloat() {
 		float v = readInt();
 
@@ -154,18 +198,30 @@ public class TypeAnimation extends AbstractAnimation implements IAnimation {
 		return v;
 	}
 
+	/**
+	 * Preview next character.
+	 * @return Next character in the stream.
+	 */
 	private char peekChar() {
 		if (endStringLoading()) return '\0';
 
 		return text.charAt(index);
 	}
 
+	/**
+	 * Read in next character and move the cursor next to it.
+	 * @return The next character read in.
+	 */
 	private char readChar() {
 		char c = peekChar();
 		index++;
 		return c;
 	}
 
+	/**
+	 * Read in the next integer in dec format.
+	 * @return     Integer read in.
+	 */
 	private int readInt() {
 		int v = 0;
 
@@ -183,6 +239,10 @@ public class TypeAnimation extends AbstractAnimation implements IAnimation {
 		return v;
 	}
 
+	/**
+	 * Set the target display text.
+	 * @param text    The new text
+	 */
 	public void setText(String text) {
 		time = 0;
 		index = 0;
@@ -192,7 +252,11 @@ public class TypeAnimation extends AbstractAnimation implements IAnimation {
 		this.text = text;
 	}
 
-	public void setInterval(double interval) {
+	/**
+	 * Set character display interval.
+	 * @param interval       New time interval in seconds.
+	 */
+	void setInterval(double interval) {
 		this.typeInterval = interval;
 	}
 }

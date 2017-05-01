@@ -187,7 +187,7 @@ public class WildChancellorAppear extends AbstractAnimation implements IAnimatio
         typeAnimation = new TypeAnimation(this,20, 20, fontText);
 	}
 
-	CaptureData.FightAction lastFightAction;
+	private CaptureData.FightAction lastFightAction;
 
 	/**
 	 * Perform one of the fight action and prepare the battle text.
@@ -246,7 +246,7 @@ public class WildChancellorAppear extends AbstractAnimation implements IAnimatio
 		timeoutAnimation.cancelAnimation();
 	}
 
-	float eventTime;
+	private float eventTime;
 
 
 	/**
