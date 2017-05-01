@@ -301,7 +301,7 @@ public class RoboticonQuest extends Game {
 			// End phase - Clean up and move to next player.
 			case 6:
 			{
-				if (captureChancellor())
+				if (!(getPlayer() instanceof AIPlayer) && captureChancellor())
 					break;
 
 				// No "break;" when no chancellor appear!
