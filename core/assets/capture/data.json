@@ -1,7 +1,7 @@
 {
   "strUseMove": "You have used <name>!",
   "strBeginMasterBall": "\\i{0.3}1, \\w{0.5}2, \\w{0.5}\\i{0.5}...\\w{1} ",
-  "strCaptureSuccess": "\\i{0.1}You have captured the chancellor!",
+  "strCaptureSuccess": "\\i{0.1}You have captured the chancellor, and received:\\w{0.5}<price>",
   "strCaptureFail": "\\i{0.1}You have failed to capture the chancellor!",
 
   // Water -> Fire -> Grass -> Loop

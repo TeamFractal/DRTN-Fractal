@@ -18,7 +18,6 @@ import io.github.teamfractal.RoboticonQuest;
 import io.github.teamfractal.entity.enums.PurchaseStatus;
 import io.github.teamfractal.entity.enums.ResourceType;
 import io.github.teamfractal.exception.NotCommonResourceException;
-import io.github.teamfractal.exception.NotEnoughResourceException;
 
 import java.util.ArrayList;
 import java.util.Random;
@@ -415,10 +414,17 @@ public class Player {
         System.out.println("Human turn");
     }
 
-	public void applyCost(CaptureData.FightAction.Fail.ActualCost actualCost) {
-		setEnergy(getEnergy() - actualCost.energy);
-		setFood(getFood() - actualCost.food);
-		setOre(getOre() - actualCost.ore);
-		setMoney(getMoney() - actualCost.money);
+	public void applyResourceDelta(ResourceDelta resourceDelta) {
+		setEnergy(getEnergy() + resourceDelta.energy);
+		setFood(getFood() + resourceDelta.food);
+		setOre(getOre() + resourceDelta.ore);
+		setMoney(getMoney() + resourceDelta.money);
+	}
+
+	public void applyResourceDeltaNegative(ResourceDelta resourceDelta) {
+		setEnergy(getEnergy() - resourceDelta.energy);
+		setFood(getFood() - resourceDelta.food);
+		setOre(getOre() - resourceDelta.ore);
+		setMoney(getMoney() - resourceDelta.money);
 	}
 }

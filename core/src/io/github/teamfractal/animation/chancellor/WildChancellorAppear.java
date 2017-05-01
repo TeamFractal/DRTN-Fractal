@@ -21,6 +21,7 @@ import io.github.teamfractal.animation.IAnimation;
 import io.github.teamfractal.animation.IAnimationFinish;
 import io.github.teamfractal.entity.CaptureData;
 import io.github.teamfractal.entity.Player;
+import io.github.teamfractal.entity.ResourceDelta;
 import io.github.teamfractal.entity.enums.ResourceType;
 import io.github.teamfractal.screens.AbstractAnimationScreen;
 import io.github.teamfractal.util.TTFont;
@@ -218,26 +219,26 @@ public class WildChancellorAppear extends AbstractAnimation implements IAnimatio
 		double multiplier = againstRate.multiplier;
 
 		double dmg = (rnd.nextInt(40) + 40) * multiplier;
-
-		// TODO: Cost and price
+		
 		if (dmg > chancellorHp) {
+			ResourceDelta delta = new ResourceDelta(20,20,20,20);
 			ST successText = new ST(lastFightAction.success);
-			successText.add("price", "Energy x30");
-			game.getPlayer().setResource(ResourceType.ENERGY, game.getPlayer().getEnergy() + 30);
+			successText.add("price", delta.toString());
+			game.getPlayer().applyResourceDelta(delta);
 
 			typeAnimation.setText(successText.render());
 			state = CaptureState.FightSuccessTyping;
 		} else {
 			CaptureData.FightAction.Fail fail = lastFightAction.fail.get(rnd.nextInt(lastFightAction.fail.size()));
-			CaptureData.FightAction.Fail.ActualCost actualCost = fail.calculateCost();
+			ResourceDelta resourceDelta = fail.calculateCost();
 			ST failText = new ST(fail.message);
-			String costStr = actualCost.toString();
+			String costStr = resourceDelta.toString();
 			if ("".equals(costStr)) {
 				costStr = "\nNothing.";
 			}
 			failText.add("cost", costStr);
 
-			game.getPlayer().applyCost(actualCost);
+			game.getPlayer().applyResourceDeltaNegative(resourceDelta);
 
 			typeAnimation.setText(failText.render());
 			state = CaptureState.FightFailTyping;
@@ -489,7 +490,12 @@ public class WildChancellorAppear extends AbstractAnimation implements IAnimatio
 				state = CaptureTextTyping;
 				typeAnimation.setInterval(0.1);
 				if (captureSuccess) {
-					typeAnimation.setText(captureData.strCaptureSuccess);
+					ResourceDelta delta = new ResourceDelta(20,20,20,20);
+					game.getPlayer().applyResourceDelta(delta);
+
+					ST successText = new ST(captureData.strCaptureSuccess);
+					successText.add("price", delta.toString());
+					typeAnimation.setText(successText.render());
 				} else {
 					typeAnimation.setText(captureData.strCaptureFail);
 				}

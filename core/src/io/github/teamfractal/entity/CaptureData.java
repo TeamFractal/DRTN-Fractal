@@ -9,7 +9,6 @@ import com.google.gson.annotations.SerializedName;
 import java.util.List;
 import java.util.Random;
 
-
 public class CaptureData {
     private static CaptureData _instance;
 
@@ -167,8 +166,8 @@ public class CaptureData {
                 return min + _rnd.nextInt(max);
             }
 
-            public ActualCost calculateCost() {
-                ActualCost c = new ActualCost();
+            public ResourceDelta calculateCost() {
+                ResourceDelta c = new ResourceDelta();
                 c.roboticon = randomInt(cost.roboticon);
                 c.food = randomInt(cost.food);
                 c.energy = randomInt(cost.energy);
@@ -176,43 +175,6 @@ public class CaptureData {
                 c.money = randomInt(cost.money);
 
                 return c;
-            }
-
-            public class ActualCost {
-                public int roboticon;
-                public int food;
-                public int energy;
-                public int ore;
-                public int money;
-
-                @Override
-                public String toString() {
-                    StringBuilder sb = new StringBuilder(50);
-
-                    /*
-                    if (roboticon > 0) {
-                        sb.append("\nRoboticon  x" + roboticon);
-                    }
-                    */
-
-                    if (food > 0) {
-                        sb.append("\nFood  x" + food);
-                    }
-
-                    if (energy > 0) {
-                        sb.append("\nEnergy  x" + energy);
-                    }
-
-                    if (ore > 0) {
-                        sb.append("\nOre  x" + ore);
-                    }
-
-                    if (money > 0) {
-                        sb.append("\nMoney  x" + money);
-                    }
-
-                    return sb.toString();
-                }
             }
 
             public class Cost {
