@@ -219,7 +219,7 @@ public class WildChancellorAppear extends AbstractAnimation implements IAnimatio
 		double multiplier = againstRate.multiplier;
 
 		double dmg = (rnd.nextInt(40) + 40) * multiplier;
-		
+
 		if (dmg > chancellorHp) {
 			ResourceDelta delta = new ResourceDelta(20,20,20,20);
 			ST successText = new ST(lastFightAction.success);
@@ -490,7 +490,7 @@ public class WildChancellorAppear extends AbstractAnimation implements IAnimatio
 				state = CaptureTextTyping;
 				typeAnimation.setInterval(0.1);
 				if (captureSuccess) {
-					ResourceDelta delta = new ResourceDelta(20,20,20,20);
+					ResourceDelta delta = new ResourceDelta(30,30,30,30);
 					game.getPlayer().applyResourceDelta(delta);
 
 					ST successText = new ST(captureData.strCaptureSuccess);
