@@ -72,7 +72,7 @@
       "success": "Chancellor fainted.\\w{0.5}\nYou have now captured the chancellor and received \\w{0.5}<price>!",
       "fail": [
         {
-          "message": "Chancellor has grown as water injected to the body.\\w{0.5}\nChancellor tried to escape and cause you to lose:\\w{0.5}<cost>",
+          "message": "Chancellor grows as water is injected into his body.\\w{0.5}\nChancellor escaped and caused you to lose:\\w{0.5}<cost>",
           "cost": {
             "roboticon": [0, 0],
             "food": [1, 3],
@@ -89,7 +89,7 @@
       "success": "Chancellor got burnt!\\w{0.5}\nYou have now captured the chancellor and received \\w{0.5}<price>!",
       "fail": [
         {
-          "message": "Chancellor has grown as water injected to the body.\\w{0.5}\nChancellor tried to escape and cause you to lose:\\w{0.5}<cost>",
+          "message": "Chancellor grows more powerful as he absorbs the fire.\\w{0.5}\nChancellor escaped and caused you to lose:\\w{0.5}<cost>",
           "cost": {
             "roboticon": [0, 0],
             "food": [1, 3],
@@ -106,7 +106,7 @@
       "success": "Chancellor got pelt by leaves!\\w{0.5}\nYou have now captured the chancellor and received \\w{0.5}<price>!",
       "fail": [
         {
-          "message": "Chancellor has grown as water injected to the body.\\w{0.5}\nChancellor tried to escape and cause you to lose:\\w{0.5}<cost>",
+          "message": "Chancellor gains nutrition from the leafage.\\w{0.5}\nChancellor escaped and caused you to lose:\\w{0.5}<cost>",
           "cost": {
             "roboticon": [0, 0],
             "food": [1, 3],

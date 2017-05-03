@@ -1,18 +1,7 @@
-/**
- * @author DRTN
- * Team Website with download:
- * https://misterseph.github.io/DuckRelatedFractalProject/
- *
- * This Class contains either modifications or is entirely new in Assessment 3
- *
- * If you are in any doubt a complete changelog can be found here:
- * https://github.com/NotKieran/DRTN-Fractal/compare/Fractal_Initial...development
- *
- * And a more concise report can be found in our Change3 document.
- **/
+
 
 // For pre-compiled version, please see:
-// https://github.com/TeamFractal/Roboticon-Quest/releases/download/v1.0.1/RoboticonQuest-1.0.1.zip
+// https://github.com/TeamFractal/DRTN-Fractal/releases/download/v1.0.1/desktop-1.0.1.jar
 
 package io.github.teamfractal.desktop;
 
