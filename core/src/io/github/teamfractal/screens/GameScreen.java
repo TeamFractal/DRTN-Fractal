@@ -34,6 +34,7 @@ import io.github.teamfractal.entity.Player;
 import io.github.teamfractal.entity.enums.ResourceType;
 import io.github.teamfractal.util.TileConverter;
 
+import java.io.File;
 import java.util.ArrayList;
 
 public class GameScreen extends AbstractAnimationScreen implements Screen  {
@@ -249,7 +250,11 @@ public class GameScreen extends AbstractAnimationScreen implements Screen  {
 		// Setup the game board.
 		if (tmx != null) tmx.dispose();
 		if (renderer != null) renderer.dispose();
-		this.tmx = new TmxMapLoader().load("tiles/city.tmx");
+		if (new File("test.map").exists()) {
+			this.tmx = new TmxMapLoader().load("tiles/city-test.tmx");
+		} else {
+			this.tmx = new TmxMapLoader().load("tiles/city.tmx");
+		}
 		tiles = tmx.getTileSets();
 		TileConverter.setup(tiles, game);
 		renderer = new IsometricStaggeredTiledMapRenderer(tmx);

@@ -1,5 +1,3 @@
-
-
 package io.github.teamfractal;
 
 import com.badlogic.gdx.Game;
@@ -20,18 +18,6 @@ import io.github.teamfractal.util.*;
 
 import java.util.ArrayList;
 import java.util.Random;
-/**
- * @author DRTN
- * Team Website with download:
- * https://misterseph.github.io/DuckRelatedFractalProject/
- * <p>
- * This Class contains either modifications or is entirely new in Assessment 3
- * <p>
- * If you are in any doubt a complete changelog can be found here:
- * https://github.com/NotKieran/DRTN-Fractal/compare/Fractal_Initial...development
- * <p>
- * And a more concise report can be found in our Change3 document.
- **/
 
 /**
  * This is the main game start up class.
@@ -223,6 +209,10 @@ public class RoboticonQuest extends Game {
     private void implementPhase() {
 		gameScreen.clearAnimation();
         System.out.println("RoboticonQuest::nextPhase -> newPhaseState: " + phase);
+        if (checkGameEnded()) {
+        	gameOver();
+        	return ;
+		}
 
 		switch (phase) {
 			// Phase 2: Purchase Roboticon
@@ -309,7 +299,12 @@ public class RoboticonQuest extends Game {
 			// End phase - Clean up and move to next player.
 			case 6:
 			{
-				cleanUpForNextTurn();
+				System.out.println("Phase 6 - Checking");
+				// Also check if game ended
+				// If ended, it will return true.
+				// Prevent further event progress.
+				if (cleanUpForNextTurn())
+					return;
 
 				// No "break;" when no chancellor appear!
 				// Let the game to clean up and get ready for next phase.
@@ -352,6 +347,10 @@ public class RoboticonQuest extends Game {
 	    }
 	}
 
+	private void gameOver() {
+		setScreen(new EndGameScreen(this));
+	}
+
 	public void fixInputFocus () {
 		switch (phase) {
 			case 1:
@@ -380,16 +379,17 @@ public class RoboticonQuest extends Game {
 		}
 	}
 
-	private void cleanUpForNextTurn() {
-		phase = 1;
-
+	private boolean cleanUpForNextTurn() {
 		if (checkGameEnded()) {
-			setScreen(new EndGameScreen(this));
-			return ;
+			gameOver();
+			return true;
 		}
+
+		phase = 1;
 
 		this.turnNumber += 1;
 		this.nextPlayer();
+		return false;
 	}
 
 	private boolean captureChancellor() {
@@ -559,7 +559,7 @@ public class RoboticonQuest extends Game {
 	 * Checks whether the game has ended based on whether all of the tiles have been claimed
 	 * @return Returns true if ended, false if not
 	 */
-    private boolean checkGameEnded() {
+	public boolean checkGameEnded() {
         boolean ended = true;
 		LandPlot[][] plots = plotManager.getLandPlots();
         for (LandPlot[] plot : plots) {
@@ -570,26 +570,6 @@ public class RoboticonQuest extends Game {
             }
         }
         return ended;
-	}
-
-	/**
-	 * Returns the winner of the game, based on which player has the highest score
-     * @return String returning the winning player
-     */
-
-	public String getWinner(){
-        String winner;
-        if(playerList.get(0).calculateScore() > playerList.get(1).calculateScore()) {
-			winner = "Player 1 wins! You are now the Vice-Chancellor of the Colony!";
-		}
-		else {
-			if (playerList.get(1).calculateScore() > playerList.get(0).calculateScore()) {
-				winner = "Player 2 wins! You are now the Vice-Chancellor of the Colony!";
-			} else {
-				winner = "It's a draw. I'm afraid neither of you will become Vice-Chancellor of the Colony.";
-			}
-		}
-		return winner;
 	}
 
 	/**

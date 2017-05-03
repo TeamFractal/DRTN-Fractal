@@ -39,6 +39,10 @@ public class AIPlayer extends Player {
      *
      */
     public void takeTurn(int phase) {
+        if (game.checkGameEnded()) {
+            return ;
+        }
+
         switch (phase) {
             case 1:
                 //"Buy Land Plot
