@@ -266,22 +266,30 @@ public class RoboticonQuest extends Game {
 			case 4:
 				phase3description.cancelAnimation();
 				gameScreen.addAnimation(phase4description);
-                Gdx.input.setInputProcessor(genOverlay);
+				Gdx.input.setInputProcessor(genOverlay);
 
                 this.getPlayer().generateResources();
 				this.market.generateRoboticon();
 				this.roboticonMarket.actors().refreshRoboticonShop();
-                Timer timer = new Timer();
-                timer.scheduleTask(new Timer.Task() {
-                    @Override
-                    public void run() {
-                    	if (phase == 4)
-							nextPhase();
-                    }
-                }, 3);
-                timer.start();
 
-				gameScreen.getActors().switchNextButton();
+				final boolean capture = !(getPlayer() instanceof AIPlayer) && captureChancellor();
+				gameScreen.drawGenOverlay = true;
+
+				Timer timer = new Timer();
+				timer.scheduleTask(new Timer.Task() {
+					@Override
+					public void run() {
+						if (capture) {
+							gameScreen.drawGenOverlay = false;
+							gameScreen.addAnimation(new WildChancellorAppear(RoboticonQuest.this, skin));
+						} else if (phase == 4) {
+							nextPhase();
+						}
+					}
+				}, 3);
+				timer.start();
+
+				gameScreen.getActors().setNextButtonVisibility(!capture);
                 break;
 
 			// Phase 5: Open the market
@@ -301,17 +309,12 @@ public class RoboticonQuest extends Game {
 			// End phase - Clean up and move to next player.
 			case 6:
 			{
-				if (!(getPlayer() instanceof AIPlayer) && captureChancellor())
-					break;
+				cleanUpForNextTurn();
 
 				// No "break;" when no chancellor appear!
 				// Let the game to clean up and get ready for next phase.
 			}
 
-			case 7:
-				cleanUpForNextTurn();
-				// No "break;" here!
-				// Let the game to do phase 1 preparation.
 
 			// Phase 1: Enable of purchase LandPlot
 			case 1:
@@ -330,11 +333,7 @@ public class RoboticonQuest extends Game {
 
                 System.out.println("Player: " + this.currentPlayerIndex + " Turn: " + this.getTurnNumber());
 
-				if (getPlayer().getMoney() < 10) {
-					gameScreen.getActors().setNextButtonVisibility(true);
-				} else {
-					gameScreen.getActors().setNextButtonVisibility(false);
-				}
+				gameScreen.getActors().setNextButtonVisibility(getPlayer().getMoney() < 10);
         		this.getPlayer().takeTurn(1);
 				break;
 		}
@@ -394,13 +393,11 @@ public class RoboticonQuest extends Game {
 	}
 
 	private boolean captureChancellor() {
-    	boolean b = rnd.nextBoolean();
+    	boolean bCapture = rnd.nextBoolean();
 
-    	if (b) {
-		    gameScreen.addAnimation(new WildChancellorAppear(this, skin));
-	    }
+    	System.out.println("captureChancellor: " + bCapture);
 
-		return b;
+		return bCapture;
 	}
 
 	/**

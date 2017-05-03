@@ -55,6 +55,7 @@ public class GameScreen extends AbstractAnimationScreen implements Screen  {
 	private TiledMapTileSets tiles;
 
 	private ArrayList<Overlay> overlayStack;
+	public boolean drawGenOverlay;
 
 	/**
 	 * Initialise the class
@@ -299,8 +300,10 @@ public class GameScreen extends AbstractAnimationScreen implements Screen  {
 				game.roboticonMarket.draw();
 				break;
 			case (4):
-				game.genOverlay.act(delta);
-				game.genOverlay.draw();
+				if (drawGenOverlay) {
+					game.genOverlay.act(delta);
+					game.genOverlay.draw();
+				}
 				break;
 			case (5):
 				game.resourceMarket.act(delta);
